@@ -1,1 +1,0 @@
-# yut-nori-term-project
