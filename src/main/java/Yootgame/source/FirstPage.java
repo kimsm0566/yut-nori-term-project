@@ -4,7 +4,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.*;
 
+
+
 public class FirstPage extends JFrame{
+
 	private static final int MAX_PLAYER = 3;
 	private static final int MAX_PIECE = 4;
 	private JPanel panel = new JPanel();
@@ -16,6 +19,8 @@ public class FirstPage extends JFrame{
 	private PlayConfig playConfig = new PlayConfig();
 	private PlayerAdapter playerAdapter = new PlayerAdapter(playConfig);
 	private PieceAdapter pieceAdapter = new PieceAdapter(playConfig);
+
+
 	private ActionListener listen = new ActionListener() {
     	public void actionPerformed(ActionEvent e) {
     		
@@ -26,6 +31,7 @@ public class FirstPage extends JFrame{
     		}
     	}
     };
+
     public FirstPage(){
         JLabel lb1, lb2;
         lb1 = new JLabel("사용자 수");
@@ -62,9 +68,5 @@ public class FirstPage extends JFrame{
         this.setSize(600, 100);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
-    
-	public static void main(String[] args) {
-		new FirstPage();
 
-	}
 }
