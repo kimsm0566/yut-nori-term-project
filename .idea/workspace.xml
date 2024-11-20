@@ -82,7 +82,7 @@
       <recent name="$PROJECT_DIR$/src/test" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.FirstPage">
+  <component name="RunManager" selected="Application.YootnoriApplication">
     <configuration name="FirstPage" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="Yootgame.source.FirstPage" />
       <module name="NetworkTermProject.main" />
