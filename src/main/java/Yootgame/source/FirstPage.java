@@ -4,8 +4,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.*;
 
-
-
 public class FirstPage extends JFrame{
 
 	private static final int MAX_PLAYER = 3;
