@@ -7,7 +7,7 @@ import javax.swing.*;
 public class FirstPage extends JFrame{
 
 	private static final int MAX_PLAYER = 3;
-	private static final int MAX_PIECE = 5;
+	private static final int MAX_PIECE = 4;
 	private JPanel panel = new JPanel();
 	private JRadioButton playerNumbtn[] = new JRadioButton[MAX_PLAYER];
 	private JRadioButton pieceNumbtn[] = new JRadioButton[MAX_PIECE];
