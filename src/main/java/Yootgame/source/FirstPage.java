@@ -1,5 +1,6 @@
 package Yootgame.source;
 
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.*;
@@ -31,8 +32,9 @@ public class FirstPage extends JFrame{
     };
 
     public FirstPage(){
-        JLabel lb1, lb2;
-        lb1 = new JLabel("사용자 수");
+        JLabel lb2;
+		JLabel lb1 = new JLabel("사용자 수");
+		lb1.setFont(new Font("맑은 고딕", Font.PLAIN, 12));
         panel.add(lb1);
         for(int i = 0; i < playerNumbtn.length; i++) {
         	playerNumbtn[i] = new JRadioButton();
