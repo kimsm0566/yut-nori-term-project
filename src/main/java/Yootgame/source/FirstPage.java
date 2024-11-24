@@ -1,70 +1,124 @@
 package Yootgame.source;
 
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.*;
+import java.util.ArrayList;
 
-public class FirstPage extends JFrame{
+public class FirstPage extends JFrame {
+	private BackgroundPanel panel = new BackgroundPanel();
+	private JButton createRoomButton = new JButton("방 만들기");
+	private ArrayList<JButton> roomButtons = new ArrayList<>();
+	private JPanel roomPanel = new JPanel();
+	private RoomSettingPanel roomSettingPanel;
 
-	private static final int MAX_PLAYER = 3;
-	private static final int MAX_PIECE = 4;
-	private JPanel panel = new JPanel();
-	private JRadioButton playerNumbtn[] = new JRadioButton[MAX_PLAYER];
-	private JRadioButton pieceNumbtn[] = new JRadioButton[MAX_PIECE];
-	private JButton start = new JButton("시작");
-	private ButtonGroup playerNumcheck = new ButtonGroup();
-	private ButtonGroup pieceNumcheck = new ButtonGroup();
-	private PlayConfig playConfig = new PlayConfig();
-	private PlayerAdapter playerAdapter = new PlayerAdapter(playConfig);
-	private PieceAdapter pieceAdapter = new PieceAdapter(playConfig);
+	public FirstPage() {
+		this.setTitle("Lobby");
+		this.setSize(1000, 700);
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setLayout(new BorderLayout());
 
+		// Room List Panel
+		roomPanel.setLayout(new BoxLayout(roomPanel, BoxLayout.Y_AXIS));
+		JScrollPane scrollPane = new JScrollPane(roomPanel);
 
-	private ActionListener listen = new ActionListener() {
-    	public void actionPerformed(ActionEvent e) {
-    		
-    		if(e.getSource()==start)
-    		{
-    			System.out.println(playConfig.getPlayerNum()+" , "+ playConfig.getPieceNum());
-    			new PlayGame(playConfig.getPlayerNum(), playConfig.getPieceNum());
-    		}
-    	}
-    };
+		// Right Panel for Room List and Button
+		JPanel rightPanel = new JPanel();
+		rightPanel.setLayout(new BorderLayout());
+		rightPanel.add(scrollPane, BorderLayout.CENTER);
 
-    public FirstPage(){
-        JLabel lb1, lb2;
-        lb1 = new JLabel("사용자 수");
-        panel.add(lb1);
-        for(int i = 0; i < playerNumbtn.length; i++) {
-        	playerNumbtn[i] = new JRadioButton();
-        	playerNumbtn[i].setText(Integer.toString(i+2));
-        	playerNumcheck.add(playerNumbtn[i]);
-        	panel.add(playerNumbtn[i]);
-        	playerNumbtn[i].addActionListener(playerAdapter);
-        	
-        }
-        playerNumbtn[0].setSelected(true);
-        
-        lb2 = new JLabel("말 갯수");
-        panel.add(lb2);
-        for(int i = 0; i < pieceNumbtn.length; i++) {
-        	pieceNumbtn[i] = new JRadioButton();
-        	pieceNumbtn[i].setText(Integer.toString(i+2));
-        	pieceNumcheck.add(pieceNumbtn[i]);
-        	panel.add(pieceNumbtn[i]);
-        	pieceNumbtn[i].addActionListener(pieceAdapter);
-        }
-        pieceNumbtn[0].setSelected(true);
-        
+		// Create Room Button
+		createRoomButton.setPreferredSize(new Dimension(150, 30)); // Fix button size
+		createRoomButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				openRoomSettingPanel();
+			}
+		});
 
-        start.setSelected(false);
-        panel.add(start);
-        start.addActionListener(listen);
-        
-        this.add(panel);
-        this.setTitle("First page");
-        this.setVisible(true);
-        this.setSize(600, 100);
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    }
+		JPanel buttonPanel = new JPanel();
+		buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+		buttonPanel.add(createRoomButton);
+		rightPanel.add(buttonPanel, BorderLayout.SOUTH); // Add button at the bottom of the right panel
 
+		panel.setLayout(new BorderLayout());
+		panel.add(rightPanel, BorderLayout.EAST); // Place right panel on the right
+
+		this.setContentPane(panel); // Set the main panel
+		this.setVisible(true);
+	}
+
+	private void openRoomSettingPanel() {
+		roomSettingPanel = new RoomSettingPanel(this);
+		this.getContentPane().removeAll();
+		this.add(roomSettingPanel);
+		this.revalidate();
+		this.repaint();
+	}
+
+	public void addRoom(String roomName, int pieceCount, int turnTime) {
+		JButton roomButton = new JButton(roomName + " - " + pieceCount + "말, " + turnTime + "초");
+		roomButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				new PlayGame(pieceCount, turnTime);
+				dispose(); // Close current window
+			}
+		});
+		roomButtons.add(roomButton);
+		roomPanel.add(roomButton);
+		roomPanel.revalidate();
+		roomPanel.repaint();
+
+		// Return to Lobby
+		this.getContentPane().removeAll();
+
+		// Right Panel (Recreated to ensure layout remains)
+		JPanel rightPanel = new JPanel();
+		rightPanel.setLayout(new BorderLayout());
+		rightPanel.add(new JScrollPane(roomPanel), BorderLayout.CENTER);
+
+		JPanel buttonPanel = new JPanel();
+		buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+		buttonPanel.add(createRoomButton);
+		rightPanel.add(buttonPanel, BorderLayout.SOUTH);
+
+		panel.add(rightPanel, BorderLayout.EAST);
+		this.setContentPane(panel);
+		this.revalidate();
+		this.repaint();
+	}
+
+	public JPanel getRoomPanel() {
+		return roomPanel;
+	}
+
+	public JButton getCreateRoomButton() {
+		return createRoomButton;
+	}
+
+	public JPanel getPanel() {
+		return panel;
+	}
+
+	private static class BackgroundPanel extends JPanel {
+		private Image backgroundImage;
+
+		public BackgroundPanel() {
+			try {
+				backgroundImage = new ImageIcon("Yootgame/img/backgroundFicture.png").getImage();
+			} catch (Exception e) {
+				System.err.println("Background image not found: " + e.getMessage());
+			}
+		}
+
+		@Override
+		protected void paintComponent(Graphics g) {
+			super.paintComponent(g);
+			if (backgroundImage != null) {
+				g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+			}
+		}
+	}
 }
