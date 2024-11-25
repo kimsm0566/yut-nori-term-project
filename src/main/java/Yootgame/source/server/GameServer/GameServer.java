@@ -1,4 +1,4 @@
-package Yootgame.source.server.gameserver;
+package Yootgame.source.server.GameServer;
 
 import java.io.*;
 import java.net.*;
@@ -38,7 +38,7 @@ public class GameServer {
         private PrintWriter out;  // 클라이언트에게 메시지를 보낼 출력 스트림
         private BufferedReader in;  // 클라이언트로부터 메시지를 받을 입력 스트림
 
-        // 생성자: 소켓을 인자로 받아서 초기화
+        // 생성자: 소켓을 인자로 받아서 초기
         public ClientHandler(Socket socket) {
             this.socket = socket;
         }
