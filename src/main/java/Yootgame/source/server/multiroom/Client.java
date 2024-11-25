@@ -3,6 +3,7 @@ package Yootgame.source.server.multiroom;
 import java.io.*;
 import java.net.*;
 
+//
 public class Client {
     private static final String SERVER_ADDRESS = "localhost";
     private static final int SERVER_PORT = 12345;

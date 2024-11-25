@@ -3,7 +3,7 @@ package Yootgame.source.server.multiroom;
 import java.io.*;
 import java.net.*;
 
-// 멀티룸 서버를 관리하는 클래스
+// 멀티룸 서버를 관리하는 클래스.
 // 서버 소켓을 생성하여 클라이언트의 연결을 수락하고, 클라이언트마다 별도의 스레드를 관리함
 public class MultiRoomServer {
     private static final int PORT = 12345;
