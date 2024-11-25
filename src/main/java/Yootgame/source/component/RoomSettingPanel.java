@@ -1,18 +1,22 @@
-package Yootgame.source;
+package Yootgame.source.component;
+
+import Yootgame.source.ui.Lobby;
+
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-class RoomSettingPanel extends JPanel {
-    private FirstPage parent;
+
+public class RoomSettingPanel extends JPanel {
+    private Lobby parent;
     private ButtonGroup pieceGroup = new ButtonGroup();
     private ButtonGroup timeGroup = new ButtonGroup();
     private JButton createButton = new JButton("방 만들기");
     private JButton cancelButton = new JButton("취소");
 
-    public RoomSettingPanel(FirstPage parent) {
+    public RoomSettingPanel(Lobby parent) {
         this.parent = parent;
         this.setLayout(new BorderLayout()); // Main layout for the panel
 
