@@ -5,7 +5,7 @@ import java.net.*;
 import java.util.*;
 
 public class GameServer {
-    private static final int PORT = 12345; // 서버가 사용할 포트 번호
+    private static final int PORT = 12345; // 서버가 사용할 포트 번호.
 
     // 게임 상태를 저장하는 Map 객체 (Key: "player-piece", Value: 위치/상태)
     private static Map<String, Integer> gameState = new HashMap<>();
@@ -15,9 +15,9 @@ public class GameServer {
 
     public static void main(String[] args) {
         System.out.println("Game Server started...");
-        try (ServerSocket serverSocket = new ServerSocket(PORT)) { // 서버 소켓 생성
+        try (ServerSocket serverSocket = new ServerSocket(PORT)) { // 서버 소켓 생성.
             while (true) {
-                // 클라이언트의 연결을 기다림 (blocking call)
+                // 클라이언트의 연결을 기다림 (blocking call,)
                 Socket clientSocket = serverSocket.accept();
                 System.out.println("Client connected: " + clientSocket.getInetAddress());
 

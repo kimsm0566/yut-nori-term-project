@@ -10,10 +10,10 @@ public class GameClient {
     private BufferedReader serverInput; // 서버로부터 입력을 받는 스트림
     private PrintWriter serverOutput; // 서버로 데이터를 보내는 스트림
     private Socket socket; // 서버와의 연결을 관리하는 소켓
-    private boolean running = true; // 클라이언트 실행 상태
+    private boolean running = true; // 클라이언트 실행 상태..
 
     public static void main(String[] args) {
-        // GameClient 인스턴스 생성 및 시작
+        // GameClient 인스턴스 생성 및 시작.
         GameClient client = new GameClient();
         client.start();
     }
