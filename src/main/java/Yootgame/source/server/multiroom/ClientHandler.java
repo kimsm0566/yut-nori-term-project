@@ -9,7 +9,7 @@ public class ClientHandler extends Thread {
     private String currentRoom; // 클라이언트가 현재 참여 중인 방 이름
     private PrintWriter out; // 클라이언트로 메시지를 전송하기 위한 출력 스트림
 
-    //새성자: 클라이언트와 연결된 소켓과 룸 관리 객체 초기화
+    //생성자: 클라이언트와 연결된 소켓과 룸 관리 객체 초기화
     public ClientHandler(Socket socket, RoomManager roomManager) {
         this.socket = socket; //소켓 객체 초기화
         this.roomManager = roomManager; //룸 관리 객체 초기화

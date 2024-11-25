@@ -19,6 +19,8 @@ public class RoomManager {
     // 룸 생성
     public synchronized void createRoom(String roomName) {
         rooms.putIfAbsent(roomName, ConcurrentHashMap.newKeySet());
+        // 턴 시간
+        // 말 개수
         // putIfAnsent: Key 값이 존재하는 경우 Map의 Value의 값을 반환하고, Key값이 존재하지 않는 경우
         // key와 Value를 Map에 저장하고 Null을 반환함
     }
@@ -34,6 +36,8 @@ public class RoomManager {
     // 룸 목록 조회
     public synchronized List<String> listRooms() {
         return new ArrayList<>(rooms.keySet());
+        // 턴 시간
+        // 말 개수
     }
 
     // 룸 퇴장
