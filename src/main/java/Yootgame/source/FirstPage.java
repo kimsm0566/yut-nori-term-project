@@ -60,10 +60,10 @@ public class FirstPage extends JFrame{
 		}
 		pieceNumbtn[0].setSelected(true);
 
-
 		start.setSelected(false);
 		panel.add(start);
 		start.addActionListener(listen);
+
 
 		this.add(panel);
 		this.setTitle("First page");
