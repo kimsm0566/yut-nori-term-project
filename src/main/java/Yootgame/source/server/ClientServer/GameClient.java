@@ -1,4 +1,4 @@
-package Yootgame.source.server.clientserver;
+package Yootgame.source.server.ClientServer;
 
 import java.io.*;
 import java.net.*;
