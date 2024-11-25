@@ -12,7 +12,7 @@ public class Client {
 
     public static void main(String[] args) {
         try {
-            // 서버와의 연결을 위해 소켓 생성사고 서버 주소와 포트 지정하여 연결
+            // 서버와의 연결을 위해 소켓 생성사고 서버 주소와 포트 지정하여 연결함
             socket = new Socket(SERVER_ADDRESS, SERVER_PORT);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream())); //서버로부터 메세지 읽기위한 입력 스트림
             out = new PrintWriter(socket.getOutputStream(), true); // 서버로 메시지를 보내기 위한 출력 스트림
