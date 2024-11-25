@@ -50,7 +50,7 @@ public class ClientHandler extends Thread {
 
     // 클라이언트의 명령어를 처리 메서드
     private void processCommand(String command) {
-        if (command.startsWith("/create ")) {   // /create 명령어 처리
+        if (command.startsWith("/create ")) {   // /create 명령어 처리d
             String roomName = command.substring(8).trim(); // 룸 이름 추출
             roomManager.createRoom(roomName); // 룸 생성
             out.println("room '" + roomName + "'Generation completed."); // 룸 생성 완료 메세지 출력
