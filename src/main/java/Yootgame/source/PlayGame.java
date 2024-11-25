@@ -14,7 +14,7 @@ public class PlayGame implements ActionListener{
 	private Player nowPlayer;
 	private int control=1;
 	
-	PlayGame(int people, int mal)
+	public PlayGame(int people, int mal)
 	{
 		players = new Player[people];
 		for(int i=0;i<people;i++)

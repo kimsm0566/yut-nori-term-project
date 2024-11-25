@@ -5,6 +5,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.*;
 
+import Yootgame.source.ui.Lobby;
+import Yootgame.source.component.RoomSettingPanel;
+
 public class FirstPage extends JFrame{
 
 	private static final int MAX_PLAYER = 3;
@@ -21,52 +24,52 @@ public class FirstPage extends JFrame{
 
 
 	private ActionListener listen = new ActionListener() {
-    	public void actionPerformed(ActionEvent e) {
-    		
-    		if(e.getSource()==start)
-    		{
-    			System.out.println(playConfig.getPlayerNum()+" , "+ playConfig.getPieceNum());
-    			new PlayGame(playConfig.getPlayerNum(), playConfig.getPieceNum());
-    		}
-    	}
-    };
+		public void actionPerformed(ActionEvent e) {
 
-    public FirstPage(){
-        JLabel lb2;
+			if(e.getSource()==start)
+			{
+				System.out.println(playConfig.getPlayerNum()+" , "+ playConfig.getPieceNum());
+				new PlayGame(playConfig.getPlayerNum(), playConfig.getPieceNum());
+			}
+		}
+	};
+
+	public FirstPage(){
+		JLabel lb2;
 		JLabel lb1 = new JLabel("사용자 수");
 		lb1.setFont(new Font("맑은 고딕", Font.PLAIN, 12));
-        panel.add(lb1);
-        for(int i = 0; i < playerNumbtn.length; i++) {
-        	playerNumbtn[i] = new JRadioButton();
-        	playerNumbtn[i].setText(Integer.toString(i+2));
-        	playerNumcheck.add(playerNumbtn[i]);
-        	panel.add(playerNumbtn[i]);
-        	playerNumbtn[i].addActionListener(playerAdapter);
-        	
-        }
-        playerNumbtn[0].setSelected(true);
-        
-        lb2 = new JLabel("말 갯수");
-        panel.add(lb2);
-        for(int i = 0; i < pieceNumbtn.length; i++) {
-        	pieceNumbtn[i] = new JRadioButton();
-        	pieceNumbtn[i].setText(Integer.toString(i+2));
-        	pieceNumcheck.add(pieceNumbtn[i]);
-        	panel.add(pieceNumbtn[i]);
-        	pieceNumbtn[i].addActionListener(pieceAdapter);
-        }
-        pieceNumbtn[0].setSelected(true);
-        
+		panel.add(lb1);
+		for(int i = 0; i < playerNumbtn.length; i++) {
+			playerNumbtn[i] = new JRadioButton();
+			playerNumbtn[i].setText(Integer.toString(i+2));
+			playerNumcheck.add(playerNumbtn[i]);
+			panel.add(playerNumbtn[i]);
+			playerNumbtn[i].addActionListener(playerAdapter);
 
-        start.setSelected(false);
-        panel.add(start);
-        start.addActionListener(listen);
-        
-        this.add(panel);
-        this.setTitle("First page");
-        this.setVisible(true);
-        this.setSize(600, 100);
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    }
+		}
+		playerNumbtn[0].setSelected(true);
+
+		lb2 = new JLabel("말 갯수");
+		panel.add(lb2);
+		for(int i = 0; i < pieceNumbtn.length; i++) {
+			pieceNumbtn[i] = new JRadioButton();
+			pieceNumbtn[i].setText(Integer.toString(i+2));
+			pieceNumcheck.add(pieceNumbtn[i]);
+			panel.add(pieceNumbtn[i]);
+			pieceNumbtn[i].addActionListener(pieceAdapter);
+		}
+		pieceNumbtn[0].setSelected(true);
+
+		start.setSelected(false);
+		panel.add(start);
+		start.addActionListener(listen);
+
+
+		this.add(panel);
+		this.setTitle("First page");
+		this.setVisible(true);
+		this.setSize(600, 100);
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	}
 
 }
