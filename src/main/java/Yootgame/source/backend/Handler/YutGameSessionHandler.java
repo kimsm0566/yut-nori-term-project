@@ -20,6 +20,7 @@ public class YutGameSessionHandler extends RoomConnectionHandler {
     private Map<String, Integer> gameState;
     private List<PrintWriter> clientWriters;
     private RoomManager roomManager;  // RoomManager 필드 추가
+    private String nickname;
 
     public YutGameSessionHandler(Socket socket, RoomManager roomManager,
                                  Map<String, Integer> gameState, List<PrintWriter> clientWriters) {
@@ -33,6 +34,10 @@ public class YutGameSessionHandler extends RoomConnectionHandler {
     public void run() {
         try {
             setupStreams();
+            // 닉네임 설정을 기다림
+            if (!waitForNickname()) {
+                return; // 닉네임 설정 실패 시 연결 종료
+            }
             handleClientCommunication();
         } catch (IOException e) {
             e.printStackTrace();
@@ -40,6 +45,50 @@ public class YutGameSessionHandler extends RoomConnectionHandler {
             cleanup();
         }
     }
+    private boolean waitForNickname() {
+        try {
+            while (true) {
+                String message = in.readLine();
+                if (message == null) {
+                    return false;
+                }
+                if (message.startsWith("/nickname ")) {
+                    String requestedNickname = message.substring(10).trim();
+                    if (isValidNickname(requestedNickname)) {
+                        this.nickname = requestedNickname;
+                        out.println("Nickname set: " + nickname);
+                        System.out.println("Client nickname set: " + nickname);
+                        return true;
+                    } else {
+                        out.println("Invalid nickname. Please try another one.");
+                    }
+                }
+            }
+        } catch (IOException e) {
+            return false;
+        }
+    }
+    private boolean isValidNickname(String nickname) {
+        // 닉네임 유효성 검사
+        // 1. 비어있지 않은지
+        // 2. 적절한 길이인지 (예: 2-12자)
+        // 3. 허용된 문자만 포함하는지
+        // 4. 이미 사용 중인 닉네임이 아닌지
+        if (nickname == null || nickname.trim().isEmpty()) {
+            return false;
+        }
+        if (nickname.length() < 2 || nickname.length() > 12) {
+            return false;
+        }
+        // 알파벳, 숫자, 언더스코어만 허용
+        if (!nickname.matches("^[a-zA-Z0-9_]+$")) {
+            return false;
+        }
+        // 다른 클라이언트와 중복되지 않는지 확인
+        // (이 부분은 서버에서 닉네임 목록을 관리하는 방식에 따라 구현)
+        return true;
+    }
+
 
     private void setupStreams() throws IOException {
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -96,6 +145,10 @@ public class YutGameSessionHandler extends RoomConnectionHandler {
             broadcastToRoom("UPDATE_STATE " + formatGameState());
         }
     }
+    public String getNickname() {
+        return nickname;
+    }
+
     private void handleRoomCommand(String command) {
         if (command.startsWith("/create ")) {
             String[] params = command.substring(8).trim().split(" ");
@@ -103,25 +156,26 @@ public class YutGameSessionHandler extends RoomConnectionHandler {
             int turnTime = params.length > 1 ? Integer.parseInt(params[1]) : 30;
             int maxPlayers = params.length > 2 ? Integer.parseInt(params[2]) : 4;
             roomManager.createRoom(roomName, turnTime, maxPlayers);
-            out.println("Room '" + roomName + "' created.");
+            out.println("Room '" + roomName + "' created by " + nickname);
 
-            //방 만들고 바로 들어가게
             Room room = roomManager.getRoom(roomName);
             if (room != null && room.addClient(this)) {
                 currentRoom = room;
-                out.println("Joined room '" + roomName + "'.");
+                out.println(nickname + " joined room '" + roomName + "'.");
             }
 
         } else if (command.startsWith("/join ")) {
             String roomName = command.substring(6).trim();
             if (currentRoom != null) {
-                out.println("Already in a room. Please leave current room first.");
+                out.println(nickname + " is already in a room. Please leave current room first.");
                 return;
             }
             Room room = roomManager.getRoom(roomName);
             if (room != null && room.addClient(this)) {
                 currentRoom = room;
-                out.println("Joined room '" + roomName + "'.");
+                out.println(nickname + " joined room '" + roomName + "'.");
+                // 방의 다른 사용자들에게 새로운 참가자 알림
+                broadcastToRoom(nickname + " has joined the room.");
             } else {
                 out.println("Room doesn't exist or is full.");
             }
@@ -130,7 +184,27 @@ public class YutGameSessionHandler extends RoomConnectionHandler {
             listRooms();
 
         } else if (command.equals("/leave")) {
-            leaveRoom();
+            if (currentRoom != null) {
+                String roomName = currentRoom.getName();
+                currentRoom.removeClient(this);
+                // 방의 다른 사용자들에게 퇴장 알림
+                broadcastToRoom(nickname + " has left the room.");
+                out.println(nickname + " left room '" + roomName + "'.");
+
+                if (currentRoom.isEmpty()) {
+                    roomManager.removeRoom(roomName);
+                    out.println("Room '" + roomName + "' has been removed.");
+                }
+                currentRoom = null;
+            } else {
+                out.println(nickname + " is not in any room.");
+            }
+        } else {
+            out.println("Unknown command. Available commands:");
+            out.println("/create [roomName] [turnTime] [maxPlayers]");
+            out.println("/join [roomName]");
+            out.println("/list");
+            out.println("/leave");
         }
     }
 
@@ -142,8 +216,18 @@ public class YutGameSessionHandler extends RoomConnectionHandler {
             out.println("Available rooms:");
             for (Room room : rooms) {
                 out.println("- " + room.getName() +
-                        " (Players: " + room.getClients().size() + "/" + room.getNumberOfPiece() +
+                        " (Piecese: " + room.getClients().size() + "/" + room.getNumberOfPiece() +
                         ", Turn Time: " + room.getTurnTime() + "s)");
+            }
+        }
+    }
+
+    private void broadcastToRoom(String message) {
+        if (currentRoom != null) {
+            for (RoomConnectionHandler client : currentRoom.getClients()) {
+                if (client != this) {  // 자신을 제외한 방의 다른 클라이언트들에게 메시지 전송
+                    client.sendMessage(message);
+                }
             }
         }
     }
@@ -188,14 +272,6 @@ public class YutGameSessionHandler extends RoomConnectionHandler {
             }
         }
         return sb.toString().trim();
-    }
-
-    private void broadcastToRoom(String message) {
-        synchronized (clientWriters) {
-            for (PrintWriter writer : clientWriters) {
-                writer.println(message);
-            }
-        }
     }
 
     private void cleanup() {

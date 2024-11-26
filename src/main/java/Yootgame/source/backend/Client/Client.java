@@ -19,6 +19,7 @@ public class Client {
     private boolean running = true;
     private Room currentRoom;
     private String currentLocation = "Lobby"; // 현재 위치를 추적하는 필드 추가
+    private String nickname;
 
 
     public static void main(String[] args) {
@@ -33,6 +34,11 @@ public class Client {
             serverInput = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             serverOutput = new PrintWriter(socket.getOutputStream(), true);
 
+            System.out.println("Connected to server: " + SERVER_ADDRESS + ":" + SERVER_PORT);
+
+            // 닉네임 입력 처리
+            setNickname();
+
             // 서버 메시지 수신 스레드 시작
             listenForUpdates();
 
@@ -44,6 +50,30 @@ public class Client {
             e.printStackTrace();
         } finally {
             closeConnection();
+        }
+    }
+    private void setNickname() {
+        Scanner scanner = new Scanner(System.in);
+        while (true) {
+            System.out.print("Enter your nickname: ");
+            String input = scanner.nextLine().trim();
+            if (!input.isEmpty()) {
+                sendMessage("/nickname " + input);
+                try {
+                    String response = serverInput.readLine();
+                    if (response.startsWith("Nickname set:")) {
+                        this.nickname = input;
+                        System.out.println(response);
+                        break;
+                    } else {
+                        System.out.println(response);
+                    }
+                } catch (IOException e) {
+                    System.out.println("Error reading from server");
+                }
+            } else {
+                System.out.println("Nickname cannot be empty. Please try again.");
+            }
         }
     }
 

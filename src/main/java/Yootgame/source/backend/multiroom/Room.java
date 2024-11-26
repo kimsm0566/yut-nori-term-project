@@ -11,7 +11,7 @@ public class Room {
     private final Set<RoomConnectionHandler> clients; // 방 참여 클라이언트 목록
     private int turnTime; // 턴 시간 (초 단위)
     private int numberOfPiece; // 윷놀이 말 개수
-    private int maxPlayers = 2; // 최대 플레이어 수
+    private final int maxPlayers = 2; // 최대 플레이어 수
 
     public Room(String name, int turnTime, int maxPlayers) {
         this.name = name;
