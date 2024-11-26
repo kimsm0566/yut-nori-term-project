@@ -1,16 +1,18 @@
-package Yootgame.source.server.multiroom;
+package Yootgame.source.backend.Handler;
+
+import Yootgame.source.backend.multiroom.Room;
+import Yootgame.source.backend.multiroom.RoomManager;
 
 import java.io.*;
 import java.net.*;
 
-//
-public class ClientHandler extends Thread {
+public class RoomConnectionHandler extends Thread {
     private final Socket socket;
     private final RoomManager roomManager;
     private Room currentRoom; // 현재 참여 중인 방
     private PrintWriter out;
 
-    public ClientHandler(Socket socket, RoomManager roomManager) {
+    public RoomConnectionHandler(Socket socket, RoomManager roomManager) {
         this.socket = socket;
         this.roomManager = roomManager;
     }
@@ -82,7 +84,7 @@ public class ClientHandler extends Thread {
             out.println("Currently created rooms:");
             for (Room room : roomList) {
                 out.println("- " + room.getName() +
-                        " (Turn Time: " + room.getTurnTime() + "s, Max Players: " + room.getMaxPlayers() + ")");
+                        " (Turn Time: " + room.getTurnTime() + "s, Number of pieces: " + room.getNumberOfPiece() + ")");
             }
         }
     }
