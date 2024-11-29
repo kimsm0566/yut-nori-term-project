@@ -18,11 +18,14 @@ public class Server {
     private static Map<String, Integer> gameState = new HashMap<>();
     private static List<PrintWriter> clientWriters = new ArrayList<>();
     private static RoomManager roomManager = new RoomManager();
+    private static Map<Socket, String> clientNicknames = new HashMap<>();
 
     public static void main(String[] args) {
         System.out.println("Unified Game Server started on port " + PORT);
+        ServerSocket serverSocket = null;
 
-        try (ServerSocket serverSocket = new ServerSocket(PORT)) {
+        try {
+            serverSocket = new ServerSocket(PORT);
             while (true) {
                 Socket clientSocket = serverSocket.accept();
                 System.out.println("Client connected - IP: " + clientSocket.getInetAddress() +
@@ -30,6 +33,28 @@ public class Server {
                 new YutGameSessionHandler(clientSocket, roomManager, gameState, clientWriters).start();
             }
         } catch (IOException e) {
+            System.err.println("Server error: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            if (serverSocket != null && !serverSocket.isClosed()) {
+                try {
+                    serverSocket.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            shutdown();
+        }
+    }
+
+
+    private static void shutdown() {
+        try {
+            for (PrintWriter writer : clientWriters) {
+                writer.close();
+            }
+            System.out.println("Server shutting down...");
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

@@ -1,31 +1,26 @@
 package Yootgame.source.backend.Handler;
 
-
 import Yootgame.source.backend.multiroom.Room;
 import Yootgame.source.backend.multiroom.RoomManager;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.Socket;
-import java.util.List;
-import java.util.Map;
+import java.io.*;
+import java.net.*;
+import java.util.*;
 
 public class YutGameSessionHandler extends RoomConnectionHandler {
-    private Socket socket;
+    private final Socket socket;
     private PrintWriter out;
     private BufferedReader in;
     private Room currentRoom;
-    private Map<String, Integer> gameState;
-    private List<PrintWriter> clientWriters;
-    private RoomManager roomManager;  // RoomManager 필드 추가
+    private final Map<String, Integer> gameState;
+    private final List<PrintWriter> clientWriters;
+    private final RoomManager roomManager;
     private String nickname;
 
-    public YutGameSessionHandler(Socket socket, RoomManager roomManager,
-                                 Map<String, Integer> gameState, List<PrintWriter> clientWriters) {
+    public YutGameSessionHandler(Socket socket, RoomManager roomManager, Map<String, Integer> gameState, List<PrintWriter> clientWriters) {
         super(socket, roomManager);
         this.socket = socket;
+        this.roomManager = roomManager;
         this.gameState = gameState;
         this.clientWriters = clientWriters;
     }
@@ -34,100 +29,276 @@ public class YutGameSessionHandler extends RoomConnectionHandler {
     public void run() {
         try {
             setupStreams();
-            // 닉네임 설정을 기다림
-            if (!waitForNickname()) {
-                return; // 닉네임 설정 실패 시 연결 종료
-            }
+            handleNicknameSetup();
             handleClientCommunication();
         } catch (IOException e) {
-            e.printStackTrace();
+            if (!socket.isClosed()) {
+                e.printStackTrace();
+            }
         } finally {
             cleanup();
         }
-    }
-    private boolean waitForNickname() {
-        try {
-            while (true) {
-                String message = in.readLine();
-                if (message == null) {
-                    return false;
-                }
-                if (message.startsWith("/nickname ")) {
-                    String requestedNickname = message.substring(10).trim();
-                    if (isValidNickname(requestedNickname)) {
-                        this.nickname = requestedNickname;
-                        out.println("Nickname set: " + nickname);
-                        System.out.println("Client nickname set: " + nickname);
-                        return true;
-                    } else {
-                        out.println("Invalid nickname. Please try another one.");
-                    }
-                }
-            }
-        } catch (IOException e) {
-            return false;
-        }
-    }
-    private boolean isValidNickname(String nickname) {
-        // 닉네임 유효성 검사
-        // 1. 비어있지 않은지
-        // 2. 적절한 길이인지 (예: 2-12자)
-        // 3. 허용된 문자만 포함하는지
-        // 4. 이미 사용 중인 닉네임이 아닌지
-        if (nickname == null || nickname.trim().isEmpty()) {
-            return false;
-        }
-        if (nickname.length() < 2 || nickname.length() > 12) {
-            return false;
-        }
-        // 알파벳, 숫자, 언더스코어만 허용
-        if (!nickname.matches("^[a-zA-Z0-9_]+$")) {
-            return false;
-        }
-        // 다른 클라이언트와 중복되지 않는지 확인
-        // (이 부분은 서버에서 닉네임 목록을 관리하는 방식에 따라 구현)
-        return true;
     }
 
 
     private void setupStreams() throws IOException {
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         out = new PrintWriter(socket.getOutputStream(), true);
+        super.out = out;  // 부모 클래스의 out 필드도 초기화
         synchronized (clientWriters) {
             clientWriters.add(out);
         }
-        sendWelcomeMessage();
     }
 
-    private void sendWelcomeMessage() {
-        out.println("Connected to server. Available commands:");
-        out.println("/create [roomName] [turnTime] [maxPlayers] - Create a new room");
-        out.println("/join [roomName] - Join a room");
-        out.println("/list - List all rooms");
-        out.println("/leave - Leave current room");
-        out.println("MOVE [player] [piece] [steps] - Move a game piece");
-        out.println("RESET_STATE - Reset the game state");
-    }
-
-    private void handleClientCommunication() throws IOException {
+    private void handleNicknameSetup() throws IOException {
         String message;
         while ((message = in.readLine()) != null) {
-            System.out.println("Received: " + message);
-
-            if (message.startsWith("/")) {
-                handleRoomCommand(message);
+            if (message.startsWith("/nickname ")) {
+                String requestedNickname = message.substring(10).trim();
+                if (isValidNickname(requestedNickname)) {
+                    this.nickname = requestedNickname;
+                    out.println("Nickname set: " + nickname);
+                    return;
+                } else {
+                    out.println("Invalid nickname. Please try another one.");
+                }
             } else {
-                handleGameCommand(message);
+                // 닉네임 설정 중에는 다른 메시지 무시
+                continue;
             }
         }
     }
+
+    private boolean isValidNickname(String nickname) {
+        return nickname != null &&
+                !nickname.trim().isEmpty() &&
+                nickname.length() >= 2 &&
+                nickname.length() <= 12 &&
+                nickname.matches("^[a-zA-Z0-9_가-힣]+$");
+    }
+
+
+    private void handleClientCommunication() throws IOException {
+        String message;
+        try {
+            while ((message = in.readLine()) != null && !Thread.currentThread().isInterrupted()) {
+                System.out.println("Received: " + message);
+                if (message.startsWith("/")) {
+                    if (message.startsWith("/hostInfo ") || message.startsWith("/guestInfo ")) {
+                        // 닉네임 정보를 다른 클라이언트에게 전달
+                        broadcastToRoom(message);
+                    } else {
+                        handleRoomCommand(message);
+                    }
+                } else {
+                    handleGameCommand(message);
+                }
+            }
+        } catch (IOException e) {
+            if (!socket.isClosed()) {
+                throw e;
+            }
+        }
+    }
+
+    private void handleRoomCommand(String command) {
+        if (command.startsWith("/ready ")) {
+            broadcastToRoom(command);
+            // 모든 플레이어가 준비되었는지만 확인
+            if (currentRoom != null && currentRoom.areAllPlayersReady()) {
+                // 게임 시작 준비가 완료되었음을 알림
+                broadcastToRoom("/startCountdown");
+            }
+        } else if (command.equals("/startCountdown")) {
+            // 방장만 카운트다운 메시지를 보내도록 수정
+            if (currentRoom != null && currentRoom.getClients().iterator().next() == this) {
+                broadcastToRoom(command);
+            }
+        } else if (command.startsWith("/countdown ")) {
+            // 방장만 카운트다운 숫자를 보내도록 수정
+            if (currentRoom != null && currentRoom.getClients().iterator().next() == this) {
+                broadcastToRoom(command);
+            }
+        } else if (command.equals("/countdown_cancel")) {
+            // 방장만 취소 메시지를 보내도록 수정
+            if (currentRoom != null && currentRoom.getClients().iterator().next() == this) {
+                broadcastToRoom(command);
+            }
+        } else if (command.equals("/startGame")) {
+            broadcastToRoom(command);
+        } else if (command.startsWith("/create ")) {
+            createRoom(command);
+        } else if (command.startsWith("/join ")) {
+            joinRoom(command);
+        } else if (command.equals("/list")) {
+            listRooms();
+        } else if (command.equals("/leave")) {
+            leaveRoom();
+        } else {
+            showAvailableCommands();
+        }
+    }
+
+    private void showAvailableCommands() {
+        out.println("Unknown command. Available commands:");
+        out.println("/create [roomName] [turnTime] [maxPlayers]");
+        out.println("/join [roomName]");
+        out.println("/list");
+        out.println("/leave");
+    }
+
+    private void createRoom(String command) {
+        String[] params = command.substring(8).trim().split(" ");
+        if (params.length >= 3) {  // 최소 3개 파라미터 필요
+            String roomName = params[0];
+            int turnTime = Integer.parseInt(params[1]);  // 두 번째 파라미터가 turnTime
+            int numberOfPiece = Integer.parseInt(params[2]);  // 세 번째 파라미터가 numberOfPiece
+
+            System.out.println("Debug - Creating Room: " +
+                    "Name=" + roomName +
+                    ", TurnTime=" + turnTime +
+                    ", NumberOfPiece=" + numberOfPiece);
+
+            roomManager.createRoom(roomName, turnTime, numberOfPiece);
+            Room room = roomManager.getRoom(roomName);
+            if (room != null && room.addClient(this)) {
+                currentRoom = room;
+                out.println("/create " + roomName + " " + nickname + " " + turnTime + " " + numberOfPiece);
+                broadcastRoomListUpdate();
+            }
+        }
+    }
+
+    private void broadcastRoomListUpdate() {
+        List<Room> rooms = roomManager.listRooms();
+        StringBuilder message = new StringBuilder("/room_list_update ");  // 접두어는 한 번만 추가
+
+        // 각 방의 정보를 세미콜론으로 구분하여 추가
+        for (Room room : rooms) {
+            message.append(room.getName()).append(" ")
+                    .append(room.getClients().size()).append(" ")
+                    .append(room.getNumberOfPiece()).append(" ")
+                    .append(room.getTurnTime())
+                    .append(";");
+        }
+
+        // 모든 클라이언트에게 방 목록 전송
+        String roomListMessage = message.toString();
+        synchronized (clientWriters) {
+            System.out.println("Sending room list update: " + roomListMessage);  // 디버그용
+            for (PrintWriter writer : clientWriters) {
+                writer.println(roomListMessage);
+            }
+        }
+    }
+
+    @Override
+    protected void leaveRoom() {
+        if (currentRoom != null) {
+            // 방장이 나가는 경우
+            if (currentRoom.getClients().iterator().next() == this) {
+                // 게스트가 있다면 게스트도 나가도록 처리
+                for (RoomConnectionHandler client : currentRoom.getClients()) {
+                    if (client != this) {
+                        client.out.println("/leaveRoom");
+                    }
+                }
+                // 방장이 나갈 때는 방 삭제
+                roomManager.removeRoom(currentRoom.getName());
+                currentRoom.removeClient(this);
+                out.println("/leaveRoom");
+                currentRoom = null;
+                broadcastRoomListUpdate();
+            }
+            // 게스트가 나가는 경우
+            else {
+                currentRoom.removeClient(this);
+                out.println("/leaveRoom");
+                broadcastToRoom("/leaveRoom " + nickname);  // 방장에게 게스트가 나갔다고 알림
+                currentRoom = null;
+                broadcastRoomListUpdate();
+            }
+        }
+    }
+    private void joinRoom(String command) {
+        String roomName = command.substring(6).trim();
+        if (currentRoom != null) {
+            out.println("Already in a room");
+            return;
+        }
+
+        Room room = roomManager.getRoom(roomName);
+        if (room != null && room.addClient(this)) {
+            currentRoom = room;
+            // 방 참가 메시지 전송
+            out.println("/join " + roomName + " " + nickname + " " + room.getTurnTime() + " " + room.getNumberOfPiece());
+            broadcastToRoom("/join " + roomName + " " + nickname + " " + room.getTurnTime() + " " + room.getNumberOfPiece());
+
+            // 방장 정보를 새로 참가한 게스트에게 전송
+            for (RoomConnectionHandler client : room.getClients()) {
+                if (client != this) {  // 방장을 찾아서
+                    out.println("/hostInfo " + client.getNickname());  // 게스트에게 방장 정보 전송
+                    break;
+                }
+            }
+
+            broadcastRoomListUpdate();
+        } else {
+            out.println("Room doesn't exist or is full.");
+        }
+    }
+    private void broadcastToRoom(String message) {
+        if (currentRoom != null) {
+            // 카운트다운 관련 메시지는 방장만 전송하도록 수정
+            if (message.startsWith("/countdown") || message.equals("/startCountdown")) {
+                // 방장인 경우에만 메시지 전송
+                if (currentRoom.getClients().iterator().next() == this) {
+                    for (RoomConnectionHandler client : currentRoom.getClients()) {
+                        client.sendMessage(message);
+                    }
+                }
+            } else {
+                // 다른 메시지는 기존대로 처리
+                for (RoomConnectionHandler client : currentRoom.getClients()) {
+                    client.sendMessage(message);
+                }
+            }
+        }
+    }
+
+    @Override
+    protected void listRooms() {
+        // 방 목록 업데이트 메시지 전송
+        List<Room> rooms = roomManager.listRooms();
+        String roomListMessage = formatRoomList(rooms);
+        synchronized (clientWriters) {
+            for (PrintWriter writer : clientWriters) {
+                writer.println(roomListMessage);  // "ROOM_LIST_UPDATE" 제거
+                System.out.println("Debug - Sending room list update: " + roomListMessage);
+            }
+        }
+    }
+
+    private String formatRoomList(List<Room> rooms) {
+        StringBuilder sb = new StringBuilder();
+        for (Room room : rooms) {
+            System.out.println("Debug - Room: " + room.getName() + ", Clients: " + room.getClients().size());
+            sb.append("/room_list_update ")  // 각 방 정보마다 prefix 추가
+                    .append(room.getName()).append(" ")
+                    .append(room.getClients().size()).append(" ")
+                    .append(room.getNumberOfPiece()).append(" ")
+                    .append(room.getTurnTime())
+                    .append(";");
+        }
+        return sb.toString();
+    }
+
 
     private void handleGameCommand(String message) {
         if (currentRoom == null) {
             out.println("Please join a room first.");
             return;
         }
-
         if (message.startsWith("MOVE")) {
             handleMoveCommand(message);
         } else if (message.startsWith("RESET_STATE")) {
@@ -145,105 +316,9 @@ public class YutGameSessionHandler extends RoomConnectionHandler {
             broadcastToRoom("UPDATE_STATE " + formatGameState());
         }
     }
+
     public String getNickname() {
         return nickname;
-    }
-
-    private void handleRoomCommand(String command) {
-        if (command.startsWith("/create ")) {
-            String[] params = command.substring(8).trim().split(" ");
-            String roomName = params[0];
-            int turnTime = params.length > 1 ? Integer.parseInt(params[1]) : 30;
-            int maxPlayers = params.length > 2 ? Integer.parseInt(params[2]) : 4;
-            roomManager.createRoom(roomName, turnTime, maxPlayers);
-            out.println("Room '" + roomName + "' created by " + nickname);
-
-            Room room = roomManager.getRoom(roomName);
-            if (room != null && room.addClient(this)) {
-                currentRoom = room;
-                out.println(nickname + " joined room '" + roomName + "'.");
-            }
-
-        } else if (command.startsWith("/join ")) {
-            String roomName = command.substring(6).trim();
-            if (currentRoom != null) {
-                out.println(nickname + " is already in a room. Please leave current room first.");
-                return;
-            }
-            Room room = roomManager.getRoom(roomName);
-            if (room != null && room.addClient(this)) {
-                currentRoom = room;
-                out.println(nickname + " joined room '" + roomName + "'.");
-                // 방의 다른 사용자들에게 새로운 참가자 알림
-                broadcastToRoom(nickname + " has joined the room.");
-            } else {
-                out.println("Room doesn't exist or is full.");
-            }
-
-        } else if (command.equals("/list")) {
-            listRooms();
-
-        } else if (command.equals("/leave")) {
-            if (currentRoom != null) {
-                String roomName = currentRoom.getName();
-                currentRoom.removeClient(this);
-                // 방의 다른 사용자들에게 퇴장 알림
-                broadcastToRoom(nickname + " has left the room.");
-                out.println(nickname + " left room '" + roomName + "'.");
-
-                if (currentRoom.isEmpty()) {
-                    roomManager.removeRoom(roomName);
-                    out.println("Room '" + roomName + "' has been removed.");
-                }
-                currentRoom = null;
-            } else {
-                out.println(nickname + " is not in any room.");
-            }
-        } else {
-            out.println("Unknown command. Available commands:");
-            out.println("/create [roomName] [turnTime] [maxPlayers]");
-            out.println("/join [roomName]");
-            out.println("/list");
-            out.println("/leave");
-        }
-    }
-
-    private void listRooms() {
-        List<Room> rooms = roomManager.listRooms();
-        if (rooms.isEmpty()) {
-            out.println("No rooms available.");
-        } else {
-            out.println("Available rooms:");
-            for (Room room : rooms) {
-                out.println("- " + room.getName() +
-                        " (Piecese: " + room.getClients().size() + "/" + room.getNumberOfPiece() +
-                        ", Turn Time: " + room.getTurnTime() + "s)");
-            }
-        }
-    }
-
-    private void broadcastToRoom(String message) {
-        if (currentRoom != null) {
-            for (RoomConnectionHandler client : currentRoom.getClients()) {
-                if (client != this) {  // 자신을 제외한 방의 다른 클라이언트들에게 메시지 전송
-                    client.sendMessage(message);
-                }
-            }
-        }
-    }
-
-    private void leaveRoom() {
-        if (currentRoom != null) {
-            currentRoom.removeClient(this);
-            out.println("Left room '" + currentRoom.getName() + "'.");
-            if (currentRoom.isEmpty()) {
-                roomManager.removeRoom(currentRoom.getName());
-                out.println("Room '" + currentRoom.getName() + "' has been removed.");
-            }
-            currentRoom = null;
-        } else {
-            out.println("Not in any room.");
-        }
     }
 
     private void handleResetCommand() {
@@ -276,10 +351,15 @@ public class YutGameSessionHandler extends RoomConnectionHandler {
 
     private void cleanup() {
         try {
-            leaveRoom();
-            synchronized (clientWriters) {
-                clientWriters.remove(out);
+            if (out != null) {  // out이 null이 아닐 때만 leaveRoom과 clientWriters 처리
+                if (!socket.isClosed()) {
+                    leaveRoom();
+                }
+                synchronized (clientWriters) {
+                    clientWriters.remove(out);
+                }
             }
+            // 스트림과 소켓 정리
             if (in != null) in.close();
             if (out != null) out.close();
             if (socket != null) socket.close();
@@ -288,10 +368,22 @@ public class YutGameSessionHandler extends RoomConnectionHandler {
         }
     }
 
+
     @Override
     public void sendMessage(String message) {
         if (out != null) {
             out.println(message);
         }
     }
+
+    @Override
+    protected void processCommand(String command) {
+        if (command.startsWith("/")) {
+            handleRoomCommand(command);
+        } else {
+            handleGameCommand(command);
+        }
+    }
+
+
 }

@@ -7,17 +7,67 @@ import java.util.concurrent.ConcurrentHashMap;
 
 //
 public class Room {
-    private final String name; // 방 이름
-    private final Set<RoomConnectionHandler> clients; // 방 참여 클라이언트 목록
-    private int turnTime; // 턴 시간 (초 단위)
-    private int numberOfPiece; // 윷놀이 말 개수
-    private final int maxPlayers = 2; // 최대 플레이어 수
+    private final String name;
+    private final Set<RoomConnectionHandler> clients;
+    private int turnTime;
+    private int numberOfPiece;
+    private final int maxPlayers = 2;
+    private int clientCount;
+    private String hostNickname;  // 방장 닉네임 추가
+    private String guestNickname; // 게스트 닉네임 추가
+    private boolean hostReady = false;
+    private boolean guestReady = false;
 
-    public Room(String name, int turnTime, int maxPlayers) {
+    public Room(String name, int turnTime, int numberOfPiece) {
         this.name = name;
         this.turnTime = turnTime;
-        this.numberOfPiece = maxPlayers;
-        this.clients = ConcurrentHashMap.newKeySet(); // 스레드 안전한 클라이언트 집합
+        this.numberOfPiece = numberOfPiece;
+        this.clients = ConcurrentHashMap.newKeySet();
+        this.hostNickname = null;
+        this.guestNickname = null;
+    }
+    // 플레이어의 준비 상태 설정
+    public void setPlayerReady(boolean isHost, boolean ready) {
+        if (isHost) {
+            hostReady = ready;
+        } else {
+            guestReady = ready;
+        }
+    }
+
+    // 모든 플레이어가 준비되었는지 확인
+    public boolean areAllPlayersReady() {
+        return hostReady && guestReady && clients.size() == 2;
+    }
+
+    // 준비 상태 초기화
+    public void resetReadyState() {
+        hostReady = false;
+        guestReady = false;
+    }
+
+    // 닉네임 관련 메소드 추가
+    public void setHostNickname(String nickname) {
+        this.hostNickname = nickname;
+    }
+
+    public void setGuestNickname(String nickname) {
+        this.guestNickname = nickname;
+    }
+
+    public String getHostNickname() {
+        return hostNickname;
+    }
+
+    public String getGuestNickname() {
+        return guestNickname;
+    }
+
+    public void setClientCount(int count) {
+        this.clientCount = count;
+    }
+    public int getClientCount() {
+        return clientCount;
     }
 
     public String getName() {

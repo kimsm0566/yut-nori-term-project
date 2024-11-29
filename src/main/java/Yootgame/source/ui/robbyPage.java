@@ -1,20 +1,64 @@
 package Yootgame.source.ui;
 
+import Yootgame.source.backend.Client.Client;
+import Yootgame.source.backend.multiroom.Room;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.List;
 
 public class robbyPage extends JFrame {
-    public robbyPage() {
+    private JPanel roomsPanel;
+    private JScrollPane scrollPane;
+    private JButton createRoomButton;
+    private Client client;  // Client 인스턴스를 저장할 필드 추가
+
+    public robbyPage(Client client) {
+        this.client = client;
+        initializeFrame();
+        JPanel mainPanel = createMainPanel();
+        add(mainPanel);
+        setVisible(true);
+        // 초기 방 목록 요청
+        client.sendMessage("/list");
+    }
+
+    private void initializeFrame() {
         setTitle("윷놀이");
         setSize(1000, 700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);
+    }
 
-        // 메인 패널
+    private JPanel createMainPanel() {
         JPanel mainPanel = new JPanel(new GridBagLayout());
 
         // 왼쪽 이미지 패널
+        JPanel imagePanel = createImagePanel();
+
+        // 오른쪽 방 목록 패널
+        JPanel roomListPanel = createRoomListPanel();
+
+        // GridBagConstraints 설정
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.BOTH;
+
+        // 왼쪽 패널 추가
+        gbc.weightx = 0.67;
+        gbc.weighty = 1.0;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        mainPanel.add(imagePanel, gbc);
+
+        // 오른쪽 패널 추가
+        gbc.weightx = 0.33;
+        gbc.gridx = 1;
+        mainPanel.add(roomListPanel, gbc);
+
+        return mainPanel;
+    }
+
+    private JPanel createImagePanel() {
         JPanel imagePanel = new JPanel(new BorderLayout());
         ImageIcon originalIcon = new ImageIcon("src/main/java/Yootgame/img/backgroundFicture.png");
         JLabel imageLabel = new JLabel() {
@@ -28,92 +72,85 @@ public class robbyPage extends JFrame {
             }
         };
         imagePanel.add(imageLabel);
+        return imagePanel;
+    }
 
-        // 오른쪽 방 목록 패널
+    private JPanel createRoomListPanel() {
         JPanel roomListPanel = new JPanel(new BorderLayout());
 
-        // 상단 제목
-        JLabel titleLabel = new JLabel("로비", SwingConstants.CENTER);
-        titleLabel.setOpaque(true); // 배경색이 보이도록 설정
-        titleLabel.setBackground(new Color(255, 255, 255)); // 배경색 설정
-        titleLabel.setForeground(new Color(60, 60, 60)); // 글자색 설정
-        titleLabel.setFont(new Font("맑은 고딕", Font.BOLD, 20));
-        titleLabel.setPreferredSize(new Dimension(0, 40));
-        titleLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0)); // 여백 추가
+        // 상단 패널 (제목과 새로고침 버튼을 포함)
+        JPanel topPanel = new JPanel(new BorderLayout());
+        JLabel titleLabel = createTitleLabel();
+        JButton refreshButton = createRefreshButton();
 
-        // 방 목록을 보여줄 스크롤 패널
-        JPanel roomsPanel = new JPanel();
+        topPanel.add(titleLabel, BorderLayout.CENTER);
+        topPanel.add(refreshButton, BorderLayout.EAST);
+
+        // 방 목록 패널
+        roomsPanel = new JPanel();
         roomsPanel.setLayout(new BoxLayout(roomsPanel, BoxLayout.Y_AXIS));
 
-
-        // 각 방을 개별 패널로 생성
-        for(int i = 1; i <= 10; i++) {
-            JPanel roomPanel = createRoomPanel("방 제목 " + i, i + "/4명");
-            roomsPanel.add(roomPanel);
-        }
-
-        JScrollPane scrollPane = new JScrollPane(roomsPanel);
+        // 스크롤 패널
+        scrollPane = new JScrollPane(roomsPanel);
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
-//        scrollPane.setBorder(BorderFactory.createEmptyBorder()); // 테두리 제거
 
         // 방 만들기 버튼
-        JButton createRoomButton = new JButton("방 만들기");
+        createRoomButton = new JButton("방 만들기");
         createRoomButton.setPreferredSize(new Dimension(0, 40));
+        createRoomButton.addActionListener(e -> handleCreateRoom());
 
-        roomListPanel.add(titleLabel, BorderLayout.NORTH);
+        roomListPanel.add(topPanel, BorderLayout.NORTH);
         roomListPanel.add(scrollPane, BorderLayout.CENTER);
         roomListPanel.add(createRoomButton, BorderLayout.SOUTH);
 
-        // GridBagConstraints 설정
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.weightx = 0.67;
-        gbc.weighty = 1.0;
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        mainPanel.add(imagePanel, gbc);
-
-        gbc.weightx = 0.33;
-        gbc.gridx = 1;
-        mainPanel.add(roomListPanel, gbc);
-
-        add(mainPanel);
+        return roomListPanel;
+    }
+    private JButton createRefreshButton() {
+        JButton refreshButton = new JButton("새로고침");
+        refreshButton.setPreferredSize(new Dimension(100, 40));
+        refreshButton.setFont(new Font("맑은 고딕", Font.PLAIN, 14));
+        refreshButton.addActionListener(e -> refreshRoomList());
+        return refreshButton;
+    }
+    private void refreshRoomList() {
+        client.sendMessage("/list");  // 서버에 방 목록 요청
+    }
+    private JLabel createTitleLabel() {
+        JLabel titleLabel = new JLabel("로비", SwingConstants.CENTER);
+        titleLabel.setOpaque(true);
+        titleLabel.setBackground(new Color(255, 255, 255));
+        titleLabel.setForeground(new Color(60, 60, 60));
+        titleLabel.setFont(new Font("맑은 고딕", Font.BOLD, 20));
+        titleLabel.setPreferredSize(new Dimension(0, 40));
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+        return titleLabel;
     }
 
-    private JPanel createRoomPanel(String title, String players) {
+    private JPanel createRoomPanel(String title, String players, String pieces, String turnTime) {
         JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(2, 2, 10, 5)); // 2행 2열의 그리드 레이아웃
-        panel.setBorder(BorderFactory.createLineBorder(Color.white));
-        panel.setPreferredSize(new Dimension(0, 80)); // 높이를 늘림
+        panel.setLayout(new GridLayout(2, 2, 10, 5));
+        panel.setPreferredSize(new Dimension(0, 80));
         panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 80));
-        // 테두리 설정 - 회색 라인과 패딩을 함께 적용
         panel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(255, 255, 255), 1), // 바깥쪽 테두리
-                BorderFactory.createEmptyBorder(15, 15, 15, 15)  // 안쪽 패딩
+                BorderFactory.createLineBorder(new Color(255, 255, 255), 1),
+                BorderFactory.createEmptyBorder(15, 15, 15, 15)
         ));
 
-        // 배경색 설정
         Color defaultBackground = new Color(255, 255, 255);
         panel.setBackground(defaultBackground);
         panel.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
-        // 왼쪽 상단: 방 제목
+        // 라벨 생성 및 설정
         JLabel titleLabel = new JLabel(title);
+        JLabel playersLabel = new JLabel(players);
+        JLabel pieceLabel = new JLabel(pieces);
+        JLabel turnTimeLabel = new JLabel(turnTime);
+
+        // 폰트 및 스타일 설정
         titleLabel.setFont(new Font("맑은 고딕", Font.BOLD, 16));
-
-        // 오른쪽 상단: 인원 수 (1:1)
-        JLabel playersLabel = new JLabel("");
         playersLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-
-        // 왼쪽 하단: 말 개수
-        JLabel pieceLabel = new JLabel("말 개수: 4개");
         pieceLabel.setFont(new Font("맑은 고딕", Font.PLAIN, 12));
-        pieceLabel.setForeground(new Color(100, 100, 100));
-
-        // 오른쪽 하단: 턴 시간
-        JLabel turnTimeLabel = new JLabel("턴 시간: 30초");
         turnTimeLabel.setFont(new Font("맑은 고딕", Font.PLAIN, 12));
-        turnTimeLabel.setForeground(new Color(100, 100, 100));
 
         // 컴포넌트 추가
         panel.add(titleLabel);
@@ -121,7 +158,14 @@ public class robbyPage extends JFrame {
         panel.add(pieceLabel);
         panel.add(turnTimeLabel);
 
-        // 마우스 이벤트
+        // 마우스 이벤트 추가
+        addMouseListeners(panel, title, players, pieces, turnTime, defaultBackground);
+
+        return panel;
+    }
+
+    private void addMouseListeners(JPanel panel, String title, String players,
+                                   String pieces, String turnTime, Color defaultBackground) {
         panel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
@@ -135,14 +179,77 @@ public class robbyPage extends JFrame {
 
             @Override
             public void mouseClicked(MouseEvent e) {
-                JOptionPane.showMessageDialog(null,
-                        title + "\n" +
-                                "1:1 매치\n" +
-                                "말 개수: 4개\n" +
-                                "턴 시간: 30초");
+                showJoinRoomDialog(title, players, pieces, turnTime);
             }
         });
+    }
 
-        return panel;
+    private void showJoinRoomDialog(String title, String players, String pieces, String turnTime) {
+        // 현재 인원 수 확인
+        String[] playerCount = players.split("/");
+        int currentPlayers = Integer.parseInt(playerCount[0]);
+        int maxPlayers = Integer.parseInt(playerCount[1]);
+
+        if (currentPlayers >= maxPlayers) {
+            JOptionPane.showMessageDialog(
+                    null,
+                    "방이 가득 찼습니다.",
+                    "입장 불가",
+                    JOptionPane.WARNING_MESSAGE
+            );
+            return;
+        }
+
+        // 방이 가득 차지 않은 경우 기존 다이얼로그 표시
+        int option = JOptionPane.showConfirmDialog(
+                null,
+                title + "\n" +
+                        "플레이어: " + players + "\n" +
+                        pieces + "\n" +
+                        turnTime + "\n\n" +
+                        "입장하시겠습니까?",
+                "방 입장",
+                JOptionPane.YES_NO_OPTION
+        );
+
+        if (option == JOptionPane.YES_OPTION) {
+            sendJoinRequest(title);
+        }
+    }
+
+    public void updateRoomList(List<Room> rooms) {
+        roomsPanel.removeAll();
+        if (rooms.isEmpty()) {
+            JLabel emptyLabel = new JLabel("생성된 방이 없습니다.");
+            emptyLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            roomsPanel.add(emptyLabel);
+        } else {
+            for (Room room : rooms) {
+                JPanel roomPanel = createRoomPanel(
+                        room.getName(),
+                        room.getClientCount() + "/2",  // getClients().size() 대신 getClientCount() 사용
+                        "말 개수: " + room.getNumberOfPiece() + "개",
+                        "턴 시간: " + room.getTurnTime() + "초"
+                );
+                roomsPanel.add(roomPanel);
+            }
+        }
+        roomsPanel.revalidate();
+        roomsPanel.repaint();
+    }
+    public void handleRefreshButtonClick() {
+        client.getConnectionManager().sendMessage("/list");
+    }
+
+    private void handleCreateRoom() {
+        RoomConfigPage configPage = new RoomConfigPage(this, client);
+        configPage.setVisible(true);
+        // 방 목록 갱신 요청
+        client.sendMessage("/list");
+    }
+    private void sendJoinRequest(String roomName) {
+        // 서버에 방 입장 요청 전송
+        client.sendMessage("/join " + roomName);
+        // 실제 구현시에는 Client 인스턴스를 필드로 가지고 있어야 합니다
     }
 }

@@ -5,12 +5,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-//
 public class RoomManager {
     private final Map<String, Room> rooms = new ConcurrentHashMap<>();
 
-    public synchronized void createRoom(String roomName, int turnTime, int maxPlayers) {
-        rooms.putIfAbsent(roomName, new Room(roomName, turnTime, maxPlayers));
+    public synchronized void createRoom(String roomName, int turnTime, int numberOfPiece) {
+        rooms.putIfAbsent(roomName, new Room(roomName, turnTime, numberOfPiece));
     }
 
     public synchronized Room getRoom(String roomName) {
@@ -18,12 +17,11 @@ public class RoomManager {
     }
 
     public synchronized void removeRoom(String roomName) {
+        // 방을 제거할 때는 단순히 rooms에서 제거
         rooms.remove(roomName);
     }
 
     public synchronized List<Room> listRooms() {
-        return new ArrayList<>(rooms.values()); // Room 객체들의 리스트 반환
+        return new ArrayList<>(rooms.values());
     }
-    }
-
-
+}

@@ -1,6 +1,5 @@
 package Yootgame.source.ui;
 
-import Yootgame.source.Player;
 import Yootgame.source.Yoot;
 
 import javax.swing.*;
