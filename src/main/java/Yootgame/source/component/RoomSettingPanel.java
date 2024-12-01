@@ -1,7 +1,8 @@
 package Yootgame.source.component;
 
-import Yootgame.source.ui.Lobby;
 
+import Yootgame.source.ui.RoomConfigPage;
+import Yootgame.source.ui.robbyPage;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,13 +11,13 @@ import java.awt.event.ActionListener;
 
 
 public class RoomSettingPanel extends JPanel {
-    private Lobby parent;
+    private robbyPage parent;
     private ButtonGroup pieceGroup = new ButtonGroup();
     private ButtonGroup timeGroup = new ButtonGroup();
     private JButton createButton = new JButton("방 만들기");
     private JButton cancelButton = new JButton("취소");
 
-    public RoomSettingPanel(Lobby parent) {
+    public RoomSettingPanel(robbyPage parent) {
         this.parent = parent;
         this.setLayout(new BorderLayout()); // Main layout for the panel
 
@@ -83,22 +84,11 @@ public class RoomSettingPanel extends JPanel {
         cancelButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                parent.getContentPane().removeAll();
-
-                // Recreate the original right panel
-                JPanel rightPanel = new JPanel(new BorderLayout());
-                rightPanel.add(new JScrollPane(parent.getRoomPanel()), BorderLayout.CENTER);
-
-                JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-                buttonPanel.add(parent.getCreateRoomButton());
-                rightPanel.add(buttonPanel, BorderLayout.SOUTH);
-
-                // Restore to the layout
-                parent.getPanel().add(rightPanel, BorderLayout.EAST);
-                parent.setContentPane(parent.getPanel());
-
-                parent.revalidate();
-                parent.repaint();
+                // parent (robbyPage)로 돌아가기
+                Window window = SwingUtilities.getWindowAncestor(RoomSettingPanel.this);
+                if (window != null) {
+                    window.dispose();
+                }
             }
         });
         buttonPanel.add(cancelButton);
@@ -106,9 +96,16 @@ public class RoomSettingPanel extends JPanel {
         createButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String selectedPiece = pieceGroup.getSelection().getActionCommand();
-                String selectedTime = timeGroup.getSelection().getActionCommand();
-                parent.addRoom("새로운 방", Integer.parseInt(selectedPiece), Integer.parseInt(selectedTime));
+                if (pieceGroup.getSelection() != null && timeGroup.getSelection() != null) {
+                    String selectedPiece = pieceGroup.getSelection().getActionCommand();
+                    String selectedTime = timeGroup.getSelection().getActionCommand();
+                    RoomConfigPage configPage = new RoomConfigPage(parent, parent.client);
+                    configPage.setVisible(true);
+                    Window window = SwingUtilities.getWindowAncestor(RoomSettingPanel.this);
+                    if (window != null) {
+                        window.dispose();
+                    }
+                }
             }
         });
         buttonPanel.add(createButton);

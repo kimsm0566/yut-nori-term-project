@@ -1,4 +1,4 @@
-package Yootgame.source;
+package Yootgame.source.backend.gamelogic;
 
 public class Piece {
 

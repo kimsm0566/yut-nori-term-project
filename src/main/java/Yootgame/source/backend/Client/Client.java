@@ -1,6 +1,7 @@
 package Yootgame.source.backend.Client;
 
 
+import Yootgame.source.backend.gamelogic.YotBoard;
 import Yootgame.source.backend.multiroom.Room;
 import Yootgame.source.ui.NicknameInputPage;
 import Yootgame.source.backend.Client.*;
@@ -16,15 +17,23 @@ public class Client {
     private String nickname;
     private boolean isHost;
     private boolean running = true;
+    private YotBoard board;  // YotBoard 필드 추가
 
     public Client() {
         this.connectionManager = new ConnectionManager();
         this.uiManager = new UIManager(this);
-        this.messageHandler = new MessageHandler(this, this.uiManager);  // UIManager 전달
+        this.messageHandler = new MessageHandler(this, this.uiManager, board);  // UIManager 전달
     }
     public static void main(String[] args) {
         Client client = new Client();
         client.start();
+    }
+    // YotBoard 설정 메소드 추가
+    public void setBoard(YotBoard board) {
+        this.board = board;
+    }
+    public MessageHandler getMessageHandler() {
+        return messageHandler;
     }
 
     public void start() {

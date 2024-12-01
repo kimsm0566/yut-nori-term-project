@@ -1,40 +1,54 @@
-package Yootgame.source;
+package Yootgame.source.backend.gamelogic;
 
+import Yootgame.source.backend.gamelogic.*;
+import Yootgame.source.backend.gamelogic.Yoot;
+import Yootgame.source.backend.Client.Client;
+import Yootgame.source.backend.multiroom.Room;
+
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class PlayGame implements ActionListener{
-	private Player []players;
+	private Player[]players;
 	private YotBoard board;
 	private int pieceNum;
 	private int playerNum;
 	private int turn=0;
 	private int winner=-1;
-	private int result=0;
+	public JButton[] testButton;
+	public int result=0;
 	private Player nowPlayer;
 	private int control=1;
-	
-	public PlayGame(int people, int mal)
-	{
+	private Client client;  // Client 필드 추가
+	private Room currentRoom;  // Room 필드 추가
+
+	public PlayGame(int people, int mal, Client client, Room room) {  // Room 매개변수 추가
+		this.client = client;
+		this.currentRoom = room;
 		players = new Player[people];
-		for(int i=0;i<people;i++)
-		{
-			players[i] = new Player(i,mal);
+		for(int i=0;i<people;i++) {
+			players[i] = new Player(i, mal, client);  // Client 객체 전달
 		}
 		playerNum = people;
 		pieceNum = mal;
-		board = new YotBoard(this);//yotboard에서 버튼이 클릭 되었다는 정보를 받기위해 본인 객체를 보냄
-		
+
+		// YotBoard 생성 시 Room 객체도 전달
+		board = new YotBoard(this, client, room);
+		client.getMessageHandler().setBoard(board);
+
 		for(int i=0; i<playerNum; i++) {
 			board.setplayerInfo(i, players[i].playerPiece());
 		}
 	}
-	
 	public int getPlayerNum() {
-		
+
 		return playerNum;
 	}
-	
+	public YotBoard getBoard() {
+		return board;
+	}
+
 	int checkFinish()
 	{
 		for(int i=0;i<players.length;i++)
@@ -70,223 +84,201 @@ public class PlayGame implements ActionListener{
 		}
 		return 0;
 	}
-	
-	void boardMessage(String s) {
-		board.message(s);
+	public void boardMessage(String s) {
+		board.message(s);  // 직접 YotBoard의 logArea에 메시지 추가
 	}
-	
+
 	void boardRefreashFrame() {
 		board.refreashFrame();
 	}
-	
-	void phaze1ThrowYot()
-	{
-		if(control==1) {
-			result =0;
-			nowPlayer = players[turn];
-			if(nowPlayer.getPieces().size()==0 && nowPlayer.getPieceNum()>0) {//판위에 말이 없고 대기중인 말이 있다면 0,0에 새로 만들고
-				boardMessage("판 위에 올라가 있는 말 없음");
-			}
-			else
-			{
-				boardMessage("");
-			}
-			board.changePlayer(turn);
-			result=Yoot.throwing();//던지기 버튼 클릭
-			board.printResult(result);//던진 결과 화면에 출력
-			phaze1changeBtncolor();//UI 버튼 색깔 변경
-			
-			for(int i=0; i<playerNum; i++) {
-				board.setplayerInfo(i, players[i].playerPiece());
-			}
 
+	public void phaze1ThrowYot() {
+		if(control==1) {
+			result = Yoot.throwing();
+			board.printResult(result);
+
+			// 현재 플레이어 정보와 함께 결과 전송
+			boolean isHost = (turn == 0);
+			String nickname = isHost ? currentRoom.getHostNickname() : currentRoom.getGuestNickname();
+			client.sendMessage("/yut_result " + turn + " " + result + " " + nickname);
+
+			boardMessage("Player " + nickname + "의 차례입니다");
 			control = 3;
 		}
 	}
-	
-	void phaze2PutOnBoard()
-	{
-		if(control==2)
-		{
-			//말이 있으면 Player에서 알아서 찾고 도개걸 결과로 이동함
-			if(nowPlayer.createPiece()==1) //대기중인 말의 수가 있다면 새로 생성 가능
-			{
-				nowPlayer.move(0, 0, result); //여기서 알아서 업어가는지 판단해줌
-				
+
+	public void phaze2PutOnBoard() {
+		if(control==2) {
+			if(nowPlayer.createPiece()==1) {
+				nowPlayer.move(0, 0, result);
+
+				// 말 생성 및 이동 정보 전송
+				client.sendMessage("/create_piece " + turn + " " + result);
+
 				for(int i=0; i<playerNum; i++) {
 					board.setplayerInfo(i, players[i].playerPiece());
 				}
-				
-				board.printPiece(turn,0,result,nowPlayer.getPieceUpdaNum(0,result));//플레이어, 이동 이후 좌표
-				phaze2changeBtncolor();//UI 버튼 색깔 변경
-				if(checkCatch(turn)==1 || result == 4 || result ==5)//다시 윷 던지기 조건
-				{
+				board.printPiece(turn,0,result,nowPlayer.getPieceUpdaNum(0,result));
+				phaze2changeBtncolor();
+
+				if(checkCatch(turn)==1 || result == 4 || result ==5) {
 					control=1;
 					phaze1ThrowYot();
+				} else {
+					phaze4NextTurn();
 				}
-				else
-				{
-					phaze4NextTurn();//지금 플레이어 턴 종료
-				}
-			}
-			else
-			{
+			} else {
 				boardMessage("더 이상 말을 생성 할 수 없습니다.");
-				control=3;//말 생성 한도를 넘어가면 phaze3Pieceact가 작동 할 수 있도록 한다.
+				control=3;
 			}
 		}
 	}
-	
-	void phaze3Pieceact(int posx, int posy)
-	{
+
+	public void phaze3Pieceact(int posx, int posy) {
 		int index;
-		int x,y,point;
-		
-		if(control==3)
-		{// if(지금 플레이어가 판 위에 올려 놓은 말의 갯수가 0 && 지금 플레이어의 남은 말 0 이상(남은 말=전체 말 - 골인한 말))
-			if(nowPlayer.getPieces().size()==0 && nowPlayer.getPieceNum()>0)//판위에 말이 없고 대기중인 말이 있다면 0,0에 새로 만들고
-			{
+		int x, y, point;
+
+		if(control==3) {
+			// 판 위에 말이 없고 대기중인 말이 있다면 0,0에 새로 만들고
+			if(nowPlayer.getPieces().size()==0 && nowPlayer.getPieceNum()>0) {
 				control=2;
 				phaze2PutOnBoard();
-			}
-			else
-			{
-				index = nowPlayer.checkEnable(posx, posy);//해당 버튼에 말이 있는지 확인 있으면 말 배열에 인덱스 반환
-				if(index!=-1)
-				{
+			} else {
+				// 해당 버튼에 말이 있는지 확인, 있으면 말 배열에 인덱스 반환
+				index = nowPlayer.checkEnable(posx, posy);
+				if(index!=-1) {
 					//말이 있으면 Player에서 알아서 찾고 도개걸 결과로 이동함
 					board.printPiece(4, posx, posy, 0);//가기전에 흰색으로 원상 복구 후 이동
+
 					if(nowPlayer.move(posx, posy, result)==1) //여기서 알아서 업어가는지 판단해줌
 					{//들어가거나 겹쳐졌을때 화면에 표시를 안한다 이것때문에 자꾸 오류가 난다.
 						boardMessage("P "+turn+" 말 하나가 업혔습니다");
+
+						// 말 위치 조정
 						if(posx == 0 && posy == 5) {
 							posx = 1;
 							posy = 0;
-						}
-						else if(posx == 0 && posy==10){
+						} else if(posx == 0 && posy==10){
 							posx=2;
 							posy=0;
 						}
 						posy=posy+result;
+
 						if(result > 0) {
-							if(posx == 1 && posy==3)
-							{
+							if(posx == 1 && posy==3) {
 								posx=2;
 								posy=3;
-							}
-							else if(posx==1 && posy>5){
+							} else if(posx==1 && posy>5){
 								posx=0;
 								posy+=9;
-							}
-							else if(posx==2 && posy>5) {
+							} else if(posx==2 && posy>5) {
 								posx=0;
 								posy+=14;
 							}
-						}else {
+						} else {
 							if(posx==1 && posy<1) {
 								posx=0;
 								posy=5+posy;
-							}else if(posx==1 && posy==3) {
+							} else if(posx==1 && posy==3) {
 								posx=2;
 								posy=3;
-							}else if(posx==2 && posy<1) {
+							} else if(posx==2 && posy<1) {
 								posx=0;
 								posy=10+posy;
-							}else if(posx==0 && posy<1) {
+							} else if(posx==0 && posy<1) {
 								posy=20+posy;
 							}
 						}
+
 						index = nowPlayer.checkEnable(posx, posy);
-						//이 지점에서 생기는 버그: 말 A가 이동해 말 B 위에 업혔다. 그럼 말 B point += 말 A point 하고 말 A 객체 삭제
-						//말 A가 삭제되었으니 piece(==말)의 Arraylist의 index에 말이 없어서 범위 익셉션 뜸 그래서 index를 갱신해 줘야함
 						x = nowPlayer.getPieces().get(index).getX();
 						y = nowPlayer.getPieces().get(index).getY();
 						point = nowPlayer.getPieces().get(index).getPoint();
 						board.printPiece(turn,x,y,point);
-					}
-					else if(nowPlayer.checkPiecein() ==1)
-					{
+
+						// 말 업기 상태를 서버에 전송
+						client.sendMessage("/move_piece " + turn + " " + x + " " + y + " " + point + " up");
+
+					} else if(nowPlayer.checkPiecein() ==1) {
 						boardMessage("P "+turn+" 말 하나가 골인했습니다");
-					}
-					else
-					{
+						// 골인 상태를 서버에 전송
+						client.sendMessage("/piece_goal " + turn);
+					} else {
 						x = nowPlayer.getPieces().get(index).getX();
 						y = nowPlayer.getPieces().get(index).getY();
 						point = nowPlayer.getPieces().get(index).getPoint();
 						board.printPiece(turn,x,y,point);//플레이어, 이동 이후 좌표
 
+						// 일반 이동 상태를 서버에 전송
+						client.sendMessage("/move_piece " + turn + " " + x + " " + y + " " + point);
 					}
 
 					for(int i=0; i<playerNum; i++) {
 						board.setplayerInfo(i, players[i].playerPiece());
+						// 플레이어 상태 정보 전송
+						client.sendMessage("/player_info " + i + " " + players[i].playerPiece());
 					}
-					
+
 					phaze2changeBtncolor();//UI 버튼 색깔 변경
-					if(nowPlayer.getPieceNum()<=0 && nowPlayer.getPieces().size()<=0)//대기중인 말과 판위에 말이 없으면
-					{
+
+					if(nowPlayer.getPieceNum()<=0 && nowPlayer.getPieces().size()<=0) {//대기중인 말과 판위에 말이 없으면
 						control=-1;//경기 종료
 						System.out.println("경기 종료");
 						phaze4NextTurn();//해당 플레이어 턴 종료
-					}
-					else//게임이 끝나지 않았다면 (이렇게 해놔야 자바 익셉션 안뜸)
-					{
-						if(checkCatch(turn)==1 || result == 4 || result ==5)//다시 윷 던지기 조건
-						{
+					} else {//게임이 끝나지 않았다면 (이렇게 해놔야 자바 익셉션 안뜸)
+						if(checkCatch(turn)==1 || result == 4 || result ==5) {//다시 윷 던지기 조건
 							control=1;
 							phaze1ThrowYot();
-						}
-						else
-						{
+						} else {
 							phaze4NextTurn();//해당 플레이어 턴 종료
 						}
 					}
-				}
-				else
-				{
+				} else {
 					boardMessage("엉뚱한 버튼 클릭함"+posx +" , "+posy);
 				}
 			}
 		}
-		else
-		{
-			//아직 윷을 던지지도 않았는데 판 클릭하면 아무 동작 안함
-		}
 	}
 
-	void phaze4NextTurn()
-	{
+	private void phaze4NextTurn() {
 		winner = checkFinish();
-		if(winner != -1)
-		{
-			control=5;//아무 동작 안함
-			System.out.println(winner+ " 번째 플레이어가 승리하였습니다.");
-		}
-		else 
-		{
+		if(winner != -1) {
+			control = 5;
+			System.out.println(winner + " 번째 플레이어가 승리하였습니다.");
+			// 승리 정보 전송
+			client.sendMessage("/game_win " + winner);
+		} else {
 			turn++;
-			if(turn >= playerNum)
-			{
-				turn =0;
+			if(turn >= playerNum) {
+				turn = 0;
 			}
-			boardMessage("P "+turn+" 차례");
-			boardRefreashFrame();//다음 플레이어로 넘어가니까 Piece 그림 바꿔줌
+
+			// 턴 변경 정보 전송
+			boolean isNextPlayerHost = (turn == 0);
+			String nextPlayerNickname = isNextPlayerHost ?
+					currentRoom.getHostNickname() : currentRoom.getGuestNickname();
+			client.sendMessage("/change_turn " + turn + " " + nextPlayerNickname);
+
+			boardMessage("P " + turn + " 차례");
+			boardRefreashFrame();
 			initBtncolor();
 			control = 1;
 		}
 	}
-	
+
+
 	void phaze1changeBtncolor() {
 		board.buttonColor("throwBtnOFF");
-		if(nowPlayer.getPieceNum()>0)//대기중인 말이 있다면 
+		if(nowPlayer.getPieceNum()>0)//대기중인 말이 있다면
 		{
 			board.buttonColor("newPieceBtnON");//새로운 말 버튼 활성화
 		}
-		if(nowPlayer.getPieces().size()>0)//판에 말이 있다면 
+		if(nowPlayer.getPieces().size()>0)//판에 말이 있다면
 		{
 			board.buttonColor("clickBoardON");//판 클릭 버튼 활성화
 		}
 	}
-	
+
 	void phaze2changeBtncolor() {
 		if(nowPlayer.getPieces().size()>0)
 		{
@@ -305,59 +297,54 @@ public class PlayGame implements ActionListener{
 			board.buttonColor("newPieceBtnOFF");
 		}
 	}
-	
+
 	void initBtncolor() {
 		board.buttonColor("throwBtnON");
 		board.buttonColor("newPieceBtnOFF");
 		board.buttonColor("clickBoardOFF");
 	}
-	
+
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if(e.getSource()==board.throwButton && control == 1)
-		{
+		System.out.println("Action source: " + e.getSource());
+		System.out.println("Control value: " + control);
+
+		if(e.getSource() == board.getThrowButton() && control == 1) {
+			System.out.println("Throwing yut...");
 			phaze1ThrowYot();
 		}
-		if(e.getSource()==board.newPiece && control == 3)
-		{
+
+		if(e.getSource() == board.getNewPieceButton() && control == 3) {
 			control=2;
 			phaze2PutOnBoard();
 		}
 		if(control==3) {
 			for(int i=1;i<21;i++) {
-				if(e.getSource()==board.panButton[0][i])
-				{
+				if(e.getSource()==board.panButton[0][i]) {
 					phaze3Pieceact(0,i);
 				}
 			}
 			for(int p=1;p<6;p++) {
-				if(e.getSource()==board.panButton[1][p])
-				{
+				if(e.getSource()==board.panButton[1][p]) {
 					phaze3Pieceact(1,p);
-				}	
+				}
 			}
 			for(int q=1;q<6;q++) {
-				if(e.getSource()==board.panButton[2][q])
-				{
+				if(e.getSource()==board.panButton[2][q]) {
 					phaze3Pieceact(2,q);
 				}
 			}
 		}
-		for(int r=0;r<6;r++)
-		{
-			if(e.getSource()==board.testButton[r] && control == 1)
-			{
+		for(int r=0;r<6;r++) {
+			if(e.getSource()==board.getTestButtons()[r] && control == 1) {
 				phaze1ThrowYot();
 				r--;
-				if(r==0)
-				{
+				if(r==0) {
 					result = 5;
-				}
-				else
-				{
+				} else {
 					result = r;
 				}
-				board.printResult(result);//던진 결과 화면에 출력
+				board.printResult(result);
 			}
 		}
 	}

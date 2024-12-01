@@ -104,26 +104,24 @@ public class YutGameSessionHandler extends RoomConnectionHandler {
     private void handleRoomCommand(String command) {
         if (command.startsWith("/ready ")) {
             broadcastToRoom(command);
-            // 모든 플레이어가 준비되었는지만 확인
             if (currentRoom != null && currentRoom.areAllPlayersReady()) {
-                // 게임 시작 준비가 완료되었음을 알림
                 broadcastToRoom("/startCountdown");
             }
         } else if (command.equals("/startCountdown")) {
-            // 방장만 카운트다운 메시지를 보내도록 수정
             if (currentRoom != null && currentRoom.getClients().iterator().next() == this) {
                 broadcastToRoom(command);
             }
         } else if (command.startsWith("/countdown ")) {
-            // 방장만 카운트다운 숫자를 보내도록 수정
             if (currentRoom != null && currentRoom.getClients().iterator().next() == this) {
                 broadcastToRoom(command);
             }
         } else if (command.equals("/countdown_cancel")) {
-            // 방장만 취소 메시지를 보내도록 수정
             if (currentRoom != null && currentRoom.getClients().iterator().next() == this) {
                 broadcastToRoom(command);
             }
+        } else if (command.equals("/yut_result")) {  // startsWith 대신 equals 사용
+            // 윷 결과를 방 안의 모든 클라이언트에게 전달
+            broadcastToRoom(command);
         } else if (command.equals("/startGame")) {
             broadcastToRoom(command);
         } else if (command.startsWith("/create ")) {
@@ -375,15 +373,4 @@ public class YutGameSessionHandler extends RoomConnectionHandler {
             out.println(message);
         }
     }
-
-    @Override
-    protected void processCommand(String command) {
-        if (command.startsWith("/")) {
-            handleRoomCommand(command);
-        } else {
-            handleGameCommand(command);
-        }
-    }
-
-
 }

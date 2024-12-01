@@ -1,5 +1,6 @@
 package Yootgame.source.backend.Client;
 
+import Yootgame.source.backend.gamelogic.YotBoard;
 import Yootgame.source.backend.multiroom.Room;
 import Yootgame.source.ui.*;
 
@@ -10,12 +11,18 @@ import java.util.List;
 public class MessageHandler {
     private final Client client;
     private final UIManager uiManager;
+    private YotBoard board;
+    private GamePage gamePage;  // GamePage 인스턴스 추가
 
-    public MessageHandler(Client client, UIManager uiManager) {
+    public MessageHandler(Client client, UIManager uiManager, YotBoard board) {
         this.client = client;
         this.uiManager = uiManager;
-    }
+        this.board = board;
 
+    }
+    public void setBoard(YotBoard board) {
+        this.board = board;
+    }
 
     public void handleMessage(String message) {
         SwingUtilities.invokeLater(() -> {
@@ -61,6 +68,52 @@ public class MessageHandler {
                     // 단순 /leaveRoom 메시지인 경우
                     handleLeaveRoom();  // 로비로 전환
                 }
+            } else if (message.startsWith("/change_turn")) {
+                String[] parts = message.split(" ");
+                int newTurn = Integer.parseInt(parts[1]);
+                String nextPlayerNickname = parts[2];
+                boolean isHost = (newTurn == 0);
+                board.changePlayer(nextPlayerNickname, isHost);
+                board.refreashFrame();
+            } else if (message.startsWith("/game_win")) {
+                int winner = Integer.parseInt(message.split(" ")[1]);
+                board.finishMessage(winner);
+            } if (message.startsWith("/yut_result")) {
+                String[] parts = message.split(" ");
+                int playerTurn = Integer.parseInt(parts[1]);
+                int result = Integer.parseInt(parts[2]);
+                String nickname = parts[3];
+
+                SwingUtilities.invokeLater(() -> {
+                    board.printResult(result);
+                    board.changePlayer(nickname, playerTurn == 0);
+                    board.message(nickname + "님이 윷을 던졌습니다: " + result);
+                });
+            } else if (message.startsWith("/move_piece")) {
+                String[] parts = message.split(" ");
+                int playerTurn = Integer.parseInt(parts[1]);
+                int x = Integer.parseInt(parts[2]);
+                int y = Integer.parseInt(parts[3]);
+                int point = Integer.parseInt(parts[4]);
+                board.printPiece(playerTurn, x, y, point);
+                if (parts.length > 5 && parts[5].equals("up")) {
+                    board.message("P " + playerTurn + " 말 하나가 업혔습니다");
+                }
+                SwingUtilities.invokeLater(() -> {
+                    board.printPiece(playerTurn, x, y, point);
+                    gamePage.repaint();  // GamePage 갱신
+                    System.out.println("/move_piece");
+                });
+            }
+            else if (message.startsWith("/piece_goal")) {
+                int playerTurn = Integer.parseInt(message.split(" ")[1]);
+                board.message("P " + playerTurn + " 말 하나가 골인했습니다");
+            }
+            else if (message.startsWith("/player_info")) {
+                String[] parts = message.split(" ");
+                int playerIndex = Integer.parseInt(parts[1]);
+                String playerInfo = parts[2];
+                board.setplayerInfo(playerIndex, playerInfo);
             }
         });
     }
@@ -87,6 +140,16 @@ public class MessageHandler {
         } catch (Exception e) {
             System.out.println("Error creating room: " + e.getMessage());
             e.printStackTrace();
+        }
+    }
+
+    private void handleGameStart() {
+        if (uiManager.getCurrentFrame() instanceof RoomPage) {
+            RoomPage roomPage = (RoomPage)uiManager.getCurrentFrame();
+            Room currentRoom = client.getCurrentRoom();  // client에서 Room 정보 가져오기
+            roomPage.addLogMessage("게임을 시작하겠습니다!");
+            GamePage gamePage = uiManager.switchToGame(currentRoom);
+            gamePage.updateCurrentPlayer(client.getNickname(), client.isHost());
         }
     }
 
@@ -211,12 +274,7 @@ public class MessageHandler {
         }
     }
 
-    private void handleGameStart() {
-        if (uiManager.getCurrentFrame() instanceof RoomPage) {
-            ((RoomPage)uiManager.getCurrentFrame()).addLogMessage("게임을 시작하겠습니다!");
-            uiManager.switchToGame();
-        }
-    }
+
 
     private void handleLeaveRoom() {
         // 방을 나갈 때 클라이언트의 상태 초기화

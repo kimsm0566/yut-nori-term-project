@@ -11,7 +11,7 @@ public class robbyPage extends JFrame {
     private JPanel roomsPanel;
     private JScrollPane scrollPane;
     private JButton createRoomButton;
-    private Client client;  // Client 인스턴스를 저장할 필드 추가
+    public Client client;  // Client 인스턴스를 저장할 필드 추가
 
     public robbyPage(Client client) {
         this.client = client;

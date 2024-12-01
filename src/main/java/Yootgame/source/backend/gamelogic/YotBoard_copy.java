@@ -1,18 +1,11 @@
-package Yootgame.source;
+package Yootgame.source.backend.gamelogic;
 
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.Image;
-import java.awt.Point;
-import java.awt.Toolkit;
+import Yootgame.source.backend.Client.Client;
 
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import javax.swing.*;
+import java.awt.*;
 
-public class YotBoard extends JFrame {
+public class YotBoard_copy {
 	private JPanel panelPan;
 	JButton [][]panButton;
 	private PlayGame play;
@@ -28,16 +21,15 @@ public class YotBoard extends JFrame {
 	JLabel yotResult;
 	JLabel boardMessage;
 	JLabel []playerInfo;
-	
+	private Client client;
 	JLabel line;
-	
-	public YotBoard(PlayGame playObject) {
+	private JPanel infoPanel; // 정보 패널
+
+	public YotBoard_copy(PlayGame playObject, Client client) {
+		this.client = client;
+		this.play = playObject;
 		play = playObject;
-		Toolkit tools = Toolkit.getDefaultToolkit();
-		Image mouseimg = tools.getImage("src/main/java/Yootgame/img/cursor.png");
-		
-		Cursor newcursor = tools.createCustomCursor(mouseimg, new Point(0,0), "LOL");
-		setCursor(newcursor);
+
 		
 		line = new JLabel(new ImageIcon("src/main/java/Yootgame/img/line.png"));
 		
@@ -203,27 +195,21 @@ public class YotBoard extends JFrame {
 			panelPan.add(testButton[q]);
 			testButton[q].addActionListener(play);
 		}
-		
-        this.add(panelPan);
-        this.setTitle("Yot play");
-        this.setVisible(true);
-        this.setSize(windowSizeX, windowSizeY);
+
 	}
-	JButton createBoardBtn(JButton btn, int x, int y, int width, int depth, boolean tf)
-	{
+	JButton createBoardBtn(JButton btn, int x, int y, int width, int depth, boolean tf) {
 		btn.setSize(width, depth);
 		btn.setBorderPainted(tf);
 		btn.setContentAreaFilled(tf);
 		btn.setLocation(x,y);
 		return btn;
 	}
-	void refreashFrame()//changeplayer와 printyotresult 화면 갱신때 빈칸으로 만듬
-	{
+	//changeplayer와 printyotresult 화면 갱신때 빈칸으로 만듬
+	public void refreashFrame() {
 		nowPlayer.setIcon(null);
 		yotResult.setText("");
 	}
-	void changePlayer(int i)
-	{
+	public void changePlayer(int i) {
 		ImageIcon []img = new ImageIcon[4];
 		img[0] = new ImageIcon("src/main/java/Yootgame/img/red.jpg");
 		img[1] = new ImageIcon("src/main/java/Yootgame/img/blue.jpg");
@@ -231,36 +217,35 @@ public class YotBoard extends JFrame {
 		img[3] = new ImageIcon("src/main/java/Yootgame/img/yellow.jpg");
 		nowPlayer.setIcon(img[i]);
 	}
-	void printResult(int i)
-	{
+	public void printResult(int i) {
 		String text;
-		switch(i){
-		case -1:
-			text = "빽도";
-			break;
-		case 1:
-			text ="도";
-			break;
-		case 2:
-			text ="개";
-			break;
-		case 3:
-			text ="걸";
-			break;
-		case 4:
-			text ="윷";
-			break;
-		case 5:
-			text ="모";
-			break;
-		default:
-			text = "printyotresult ERROR";
-			break;
+		switch(i) {
+			case -1:
+				text = "빽도";
+				break;
+			case 1:
+				text = "도";
+				break;
+			case 2:
+				text = "개";
+				break;
+			case 3:
+				text = "걸";
+				break;
+			case 4:
+				text = "윷";
+				break;
+			case 5:
+				text = "모";
+				break;
+			default:
+				text = "printyotresult ERROR";
+				break;
 		}
 		yotResult.setText(text);
+		client.sendMessage("/yut_result " + i);
 	}
-	void printPiece(int player, int posx, int posy, int num)
-	{
+	public void printPiece(int player, int posx, int posy, int num) {
 
 		if(posx==0 && posy==0)
 		{
@@ -305,10 +290,9 @@ public class YotBoard extends JFrame {
 		{
 			//System.out.println("printmal error");
 		}
-		
+		client.sendMessage("/move_piece " + player + " " + posx + " " + posy + " " + num);
 	}
-	void printBtn(String color, int posx, int posy, int num)
-	{
+	public void printBtn(String color, int posx, int posy, int num) {
 		String url="";
 		if(num != 0) {
 			if((posx==0 && posy==5) || posy==10 || posy == 15 || (posx==2 && posy==3)) {
@@ -334,20 +318,16 @@ public class YotBoard extends JFrame {
 		}
 		panButton[posx][posy].setIcon(new ImageIcon(url));
 	}
-	void message(String s)
-	{
+	public void message(String s) {
 		boardMessage.setText(s);
 	}
-	void finishMessage(int winner)
-	{
+	public void finishMessage(int winner) {
 		boardMessage.setText("Player "+winner+ " is win");
 	}
-	void setplayerInfo(int i, String s)
-	{
+	public void setplayerInfo(int i, String s) {
 		playerInfo[i].setText(s);
 	}
-	void buttonColor(String s)
-	{
+	public void buttonColor(String s) {
 		switch (s)
 		{
 		case "throwBtnOFF"://1
@@ -369,5 +349,8 @@ public class YotBoard extends JFrame {
 			panClick.setBackground(new Color(153,204,255));//판클릭 파랑
 			break;
 		}
+	}
+	public JPanel getPanelPan() {
+		return panelPan;
 	}
 }

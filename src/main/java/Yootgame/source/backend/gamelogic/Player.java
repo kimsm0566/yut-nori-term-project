@@ -1,4 +1,7 @@
-package Yootgame.source;
+package Yootgame.source.backend.gamelogic;
+
+import Yootgame.source.backend.Client.Client;
+import Yootgame.source.backend.gamelogic.Piece;
 
 import java.util.ArrayList;
 
@@ -7,22 +10,26 @@ public class Player {
 	private ArrayList<Piece> pieces;
 	private int point;
 	private int pieceNum;//아직 윷판에 안나오고 대기중인 말 수
-	public Player(int id, int pieceNum){
+	private Client client;  // Client 객체 추가
+
+
+	public Player(int id, int pieceNum, Client client){
 		this.id = id;
 		this.pieces = new ArrayList<Piece>();
 		this.point =0;
 		this.pieceNum = pieceNum;
+		this.client = client;  // Client 객체 저장
 	}
-	
+
 	public ArrayList<Piece> getPieces(){
 		return this.pieces;
 	}
-	
+
 	public int getId()
 	{
 		return this.id;
 	}
-	
+
 	public int getPoint()
 	{
 		return this.point;
@@ -76,28 +83,32 @@ public class Player {
 		s = "<남은 말:"+pieceNum+" 포인트:"+point+">";
 		return s;
 	}
-	public int move(int x, int y, int active) {  //(말 위치, 도개걸윷 정보를 보내주면) 무슨 말을 움직일까요?		
-		if(pieces.size()!=0)
-		{
-			for(Piece piece : pieces)
-			{
-				if(piece.getX()==x && piece.getY()==y)//(말 위치에 있는 말을 찾고 도개걸윷 만큼 이동시킴)
-				{
+	public int move(int x, int y, int active) {
+		if(pieces.size()!=0) {
+			for(Piece piece : pieces) {
+				if(piece.getX()==x && piece.getY()==y) {
 					piece.setPos(active);
+					// 말 이동 후 서버에 상태 전송
+					client.sendMessage("/move_piece " + id + " " + piece.getX() + " " + piece.getY() + " " + piece.getPoint());
 				}
 			}
-			return checkUpda();
+			int updaResult = checkUpda();
+			if(updaResult == 1) {
+				// 말 업기 발생 시 서버에 전송
+				client.sendMessage("/piece_upda " + id + " " + x + " " + y);
+			}
+			return updaResult;
 		}
 		return 0;
 	}
-	public int checkCatch(int positionx, int positiony){
-		for(Piece piece : pieces)
-		{
-			if(piece.getX()==positionx && piece.getY()==positiony)
-			{
-				System.out.println(piece.getPoint()+"개 잡혔다");
+
+	public int checkCatch(int positionx, int positiony) {
+		for(Piece piece : pieces) {
+			if(piece.getX()==positionx && piece.getY()==positiony) {
 				pieceNum += piece.getPoint();
 				pieces.remove(piece);
+				// 말 잡기 시 서버에 전송
+				client.sendMessage("/piece_catch " + id + " " + positionx + " " + positiony + " " + piece.getPoint());
 				return 1;
 			}
 		}
@@ -113,13 +124,13 @@ public class Player {
 		}
 		return -1;
 	}
-	public int checkPiecein(){
-		System.out.println("P "+id+" 말 들어갔는지 확인");
-		for(Piece piece : pieces){
+	public int checkPiecein() {
+		for(Piece piece : pieces) {
 			if(piece.getY()>20) {
 				point += piece.getPoint();
-				System.out.println("말이 "+piece.getPoint()+"개 들어옴 현재 포인트"+point);
 				pieces.remove(piece);
+				// 골인 시 서버에 전송
+				client.sendMessage("/piece_goal " + id + " " + piece.getPoint());
 				return 1;
 			}
 		}
