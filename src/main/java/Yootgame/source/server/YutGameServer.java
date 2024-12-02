@@ -219,7 +219,7 @@ public class YutGameServer extends JFrame {
                 userConnect[index] = true;
                 userIdx = index;
                 AppendText("새로운 참가자 " + UserName + " 입장.");
-                WriteOne(UserName + "님 한성 윷놀이에 오신 것을 환영합니다!\n"); // 연결된 사용자에게 정상접속을 알림
+                WriteOne(UserName + "님 윷놀이에 오신 것을 환영합니다!\n"); // 연결된 사용자에게 정상접속을 알림
                 SendUserIdx();
                 String msg = "[" + UserName + "]님이 입장 하였습니다.\n";
                 WriteOthers(msg); // 아직 user_vc에 새로 입장한 user는 포함되지 않았다.
