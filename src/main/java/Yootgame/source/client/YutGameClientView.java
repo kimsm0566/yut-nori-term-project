@@ -1,6 +1,5 @@
 package Yootgame.source.client;
-// JavaObjClientView.java ObjecStram 기반 Client
-//실질적인 채팅 창
+
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -49,31 +48,31 @@ public class YutGameClientView extends JFrame {
     private JButton btnGameStart;
     private JButton btnRollYut;
 
-    private final Image mainBackground = new ImageIcon("src/main/java/Yootgame/source/client/src/main/java/Yootgame/source/client/images/bg_main.jpg").getImage();
-    private final Image yutBackground = new ImageIcon("src/main/java/Yootgame/source/client/images/bg_yut.png").getImage();
-    private final Image charBackgraoud = new ImageIcon("src/main/java/Yootgame/source/client/images/bg_character.png").getImage();
-    private final Image background = new ImageIcon("src/main/java/Yootgame/source/client/images/bg_gamepanel.png").getImage();
-    private final ImageIcon imgGameSmallSpot = new ImageIcon("src/main/java/Yootgame/source/client/images/ic_game_small_spot.png");
-    private final ImageIcon imgGameBigSpot = new ImageIcon("src/main/java/Yootgame/source/client/images/ic_game_big_spot.png");
-    private final ImageIcon character1 = new ImageIcon("src/main/java/Yootgame/source/client/images/character1.png");
-    private final ImageIcon character2 = new ImageIcon("src/main/java/Yootgame/source/client/images/character2.png");
-    private final ImageIcon character3 = new ImageIcon("src/main/java/Yootgame/source/client/images/character3.png");
-    private final ImageIcon character4 = new ImageIcon("src/main/java/Yootgame/source/client/images/character4.png");
+    private Image mainBackground = new ImageIcon("src/main/java/Yootgame/source/client/images/bg_main.jpg").getImage();
+    private Image yutBackground = new ImageIcon("src/main/java/Yootgame/source/client/images/bg_yut.png").getImage();
+    private Image charbackground = new ImageIcon("src/main/java/Yootgame/source/client/images/bg_character.png").getImage();
+    private Image background = new ImageIcon("src/main/java/Yootgame/source/client/images/bg_gamepanel.png").getImage();
+    private ImageIcon imgGameSmallSpot = new ImageIcon("src/main/java/Yootgame/source/client/images/ic_game_small_spot.png");
+    private ImageIcon imgGameBigSpot = new ImageIcon("src/main/java/Yootgame/source/client/images/ic_game_bic_spot.png");
+    private ImageIcon character1 = new ImageIcon("src/main/java/Yootgame/source/client/images/character1.png");
+    private ImageIcon character2 = new ImageIcon("src/main/java/Yootgame/source/client/images/character2.png");
+    private ImageIcon character3 = new ImageIcon("src/main/java/Yootgame/source/client/images/character3.png");
+    private ImageIcon character4 = new ImageIcon("src/main/java/Yootgame/source/client/images/character4.png");
 
-    private final ImageIcon gameStartImage = new ImageIcon("src/main/java/Yootgame/source/client/images/img_game_start.png");
-    private final ImageIcon gameStartHoverImage = new ImageIcon("src/main/java/Yootgame/source/client/images/img_game_start_hover.png");
-    private final ImageIcon gameReadyImage = new ImageIcon("src/main/java/Yootgame/source/client/images/img_game_ready.png");
-    private final ImageIcon gameReadyHoverImage = new ImageIcon("src/main/java/Yootgame/source/client/images/img_game_ready_hover.png");
-    private final ImageIcon gameReadyFinishImage = new ImageIcon("src/main/java/Yootgame/source/client/images/img_game_ready_finish.png");
-    private final ImageIcon gameReadyFinishHoverImage = new ImageIcon("src/main/java/Yootgame/source/client/images/img_game_ready_finish_hover.png");
-    private final ImageIcon userReadyImage = new ImageIcon("src/main/java/Yootgame/source/client/images/img_user_ready.png");
-    private final ImageIcon rollImage = new ImageIcon("src/main/java/Yootgame/source/client/images/img_roll.png");
-    private final ImageIcon rollHoverImage = new ImageIcon("src/main/java/Yootgame/source/client/images/img_roll_hover.png");
-    private final ImageIcon yutFrontImage = new ImageIcon("src/main/java/Yootgame/source/client/images/img_yut_front.png");
-    private final ImageIcon yutBackImage = new ImageIcon("src/main/java/Yootgame/source/client/images/img_yut_back.png");
-    private final ImageIcon yutSpecialImage = new ImageIcon("src/main/java/Yootgame/source/client/images/img_yut_special.png");
-    private final ImageIcon crownImage = new ImageIcon("src/main/java/Yootgame/source/client/images/img_crown.png");
-    private final ImageIcon arrowImage = new ImageIcon("src/main/java/Yootgame/source/client/images/img_arrow.png");
+    private ImageIcon gameStartImage = new ImageIcon("src/main/java/Yootgame/source/client/images/img_game_start.png");
+    private ImageIcon gameStartHoverImage = new ImageIcon("src/main/java/Yootgame/source/client/images/img_game_start_hover.png");
+    private ImageIcon gameReadyImage = new ImageIcon("src/main/java/Yootgame/source/client/images/img_game_ready.png");
+    private ImageIcon gameReadyHoverImage = new ImageIcon("src/main/java/Yootgame/source/client/images/img_game_ready_hover.png");
+    private ImageIcon gameReadyFinishImage = new ImageIcon("src/main/java/Yootgame/source/client/images/img_game_ready_finish.png");
+    private ImageIcon gameReadyFinishHoverImage = new ImageIcon("src/main/java/Yootgame/source/client/images/img_game_ready_finish_hover.png");
+    private ImageIcon userReadyImage = new ImageIcon("src/main/java/Yootgame/source/client/images/img_user_ready.png");
+    private ImageIcon rollImage = new ImageIcon("src/main/java/Yootgame/source/client/images/img_roll.png");
+    private ImageIcon rollHoverImage = new ImageIcon("src/main/java/Yootgame/source/client/images/img_roll_hover.png");
+    private ImageIcon yutFrontImage = new ImageIcon("src/main/java/Yootgame/source/client/images/img_yut_front.png");
+    private ImageIcon yutBackImage = new ImageIcon("src/main/java/Yootgame/source/client/images/img_yut_back.png");
+    private ImageIcon yutSpecialImage = new ImageIcon("src/main/java/Yootgame/source/client/images/img_yut_special.png");
+    private ImageIcon crownImage = new ImageIcon("src/main/java/Yootgame/source/client/images/img_crown.png");
+    private ImageIcon arrowImage = new ImageIcon("src/main/java/Yootgame/source/client/images/img_arrow.png");
 
     private ImageIcon gameSmallSpot = new ImageIcon(
             imgGameSmallSpot.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH));
@@ -123,6 +122,7 @@ public class YutGameClientView extends JFrame {
     private JLabel[] userReadyLabel = new JLabel[4];
     private JLabel[] crownLabel = new JLabel[4];
 
+    private JButton giveUpBtn = new JButton("기권");
     private JLabel winLabel = new JLabel();
     private JLabel myTurnLabel = new JLabel();
 
@@ -248,7 +248,7 @@ public class YutGameClientView extends JFrame {
             userList[i] = new UserData(-1, "");
             userPanel[i] = new JPanel() {
                 public void paintComponent(Graphics g) {
-                    g.drawImage(charBackgraoud, 0, 0, null);
+                    g.drawImage(charbackground, 0, 0, null);
                     setOpaque(false);
                     super.paintComponent(g);
                 }
@@ -373,6 +373,26 @@ public class YutGameClientView extends JFrame {
         textArea.setEditable(true);
         textArea.setFont(new Font("굴림체", Font.PLAIN, 14));
 
+        txtInput = new JTextField();
+        txtInput.setBounds(890, 729, 281, 40);
+        contentPane.add(txtInput);
+        txtInput.setColumns(10);
+
+        btnSend = new JButton("Send");
+        btnSend.setFont(new Font("굴림", Font.PLAIN, 14));
+        btnSend.setBounds(1183, 728, 69, 40);
+        contentPane.add(btnSend);
+
+        giveUpBtn.setBounds(1100, 778 ,70, 40);
+        giveUpBtn.addMouseListener(new MouseAdapter(){
+            @Override
+            public void mouseClicked(MouseEvent e) { // 마우스로 클릭했을 때
+                ChatMsg obcm = new ChatMsg(UserName, "506", "give up"); // 로그인
+                SendChatMsg(obcm);
+            }
+        });
+        contentPane.add(giveUpBtn);
+        contentPane.setComponentZOrder(giveUpBtn, 3);
 
 
         lblUserName = new JLabel("Name");
@@ -912,6 +932,11 @@ public class YutGameClientView extends JFrame {
                         winLabel.setVisible(true);
                         repaint();
                         break;
+                    case "999":
+                        AppendText("ListenNetwork 방이 가득 찼습니다.");
+
+                        break;
+
                 }
             }
         }

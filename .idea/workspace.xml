@@ -4,7 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b2e20ec5-7972-4560-8045-fa5842b2b937" name="Changes" comment="feat : connecting-ui-and-backend" />
+    <list default="true" id="b2e20ec5-7972-4560-8045-fa5842b2b937" name="Changes" comment="feat : connecting-ui-and-backend">
+      <change afterPath="$PROJECT_DIR$/src/main/java/Yootgame/source/client/images/ic_game_bic_spot.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Yootgame/source/client/ChatMsg.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Yootgame/source/client/ChatMsg.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Yootgame/source/client/JavaGameClientMain.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Yootgame/source/client/JavaGameClientMain.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Yootgame/source/client/YutGameClientView.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Yootgame/source/client/YutGameClientView.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Yootgame/source/client/images/ic_game_big_spot.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Yootgame/source/client/images/ic_game_small_spot.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Yootgame/source/client/images/ic_game_small_spot.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Yootgame/source/server/ChatMsg.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Yootgame/source/server/ChatMsg.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Yootgame/source/server/YutGameServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Yootgame/source/server/YutGameServer.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -72,6 +82,7 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "Application.성환.executor": "Run",
     "Gradle.Build NetworkTermProject.executor": "Run",
     "Gradle.NetworkTermProject.executor": "Run",
     "Gradle.NetworkTermProject::Users:kimseonmin:Library:CloudStorage:OneDrive-gachon.ac.kr:대학교:2_2:컴퓨터네트워크:termProject:NetworkTermProject [:FirstPage.main()].executor": "Run",
@@ -101,6 +112,9 @@
   }
 }]]></component>
   <component name="RecentsManager">
+    <key name="CreateClassDialog.RecentsKey">
+      <recent name="Yootgame.source.server" />
+    </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/main/java/Yootgame/source/client" />
       <recent name="$PROJECT_DIR$" />
@@ -112,28 +126,23 @@
       <recent name="$PROJECT_DIR$/src/main/java/Yootgame/source/backend/gamelogic" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="Yootgame.source.server" />
       <recent name="Yootgame.source.Server" />
       <recent name="Yootgame.source.backend.gamelogic" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.client2">
-    <configuration name="Server" type="Application" factoryName="Application" temporary="true">
+  <component name="RunManager" selected="Application.Server">
+    <configuration name="Server" type="Application" factoryName="Application">
       <option name="ALTERNATIVE_JRE_PATH" value="corretto-17" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
       <option name="MAIN_CLASS_NAME" value="Yootgame.source.server.YutGameServer" />
       <module name="NetworkTermProject.main" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="Yootgame.source.backend.Server.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
     <configuration name="client1" type="Application" factoryName="Application">
-      <option name="ALTERNATIVE_JRE_PATH" value="17" />
+      <option name="ALTERNATIVE_JRE_PATH" value="corretto-17" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
       <option name="MAIN_CLASS_NAME" value="Yootgame.source.client.JavaGameClientMain" />
       <module name="NetworkTermProject.main" />
@@ -142,6 +151,35 @@
       </method>
     </configuration>
     <configuration name="client2" type="Application" factoryName="Application">
+      <option name="ALTERNATIVE_JRE_PATH" value="corretto-17" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+      <option name="MAIN_CLASS_NAME" value="Yootgame.source.client.JavaGameClientMain" />
+      <module name="NetworkTermProject.main" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="client3" type="Application" factoryName="Application">
+      <option name="ALTERNATIVE_JRE_PATH" value="corretto-17" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+      <option name="MAIN_CLASS_NAME" value="Yootgame.source.client.JavaGameClientMain" />
+      <module name="NetworkTermProject.main" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="client4" type="Application" factoryName="Application">
+      <option name="ALTERNATIVE_JRE_PATH" value="corretto-17" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+      <option name="MAIN_CLASS_NAME" value="Yootgame.source.client.JavaGameClientMain" />
+      <module name="NetworkTermProject.main" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="client5" type="Application" factoryName="Application">
+      <option name="ALTERNATIVE_JRE_PATH" value="corretto-17" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
       <option name="MAIN_CLASS_NAME" value="Yootgame.source.client.JavaGameClientMain" />
       <module name="NetworkTermProject.main" />
       <method v="2">
@@ -149,9 +187,12 @@
       </method>
     </configuration>
     <list>
+      <item itemvalue="Application.Server" />
       <item itemvalue="Application.client1" />
       <item itemvalue="Application.client2" />
-      <item itemvalue="Application.Server" />
+      <item itemvalue="Application.client3" />
+      <item itemvalue="Application.client4" />
+      <item itemvalue="Application.client5" />
     </list>
     <recent_temporary>
       <list>
@@ -181,7 +222,9 @@
       <workItem from="1732432150054" duration="7000" />
       <workItem from="1732533891429" duration="14005000" />
       <workItem from="1732589192202" duration="153912000" />
-      <workItem from="1733127634174" duration="4174000" />
+      <workItem from="1733127634174" duration="6225000" />
+      <workItem from="1733138178378" duration="5000" />
+      <workItem from="1733138253532" duration="8419000" />
     </task>
     <task id="LOCAL-00001" summary="Build: Transfer to Java">
       <option name="closed" value="true" />
@@ -255,7 +298,15 @@
       <option name="project" value="LOCAL" />
       <updated>1733136030907</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="feat : connecting-ui-and-backend">
+      <option name="closed" value="true" />
+      <created>1733136048731</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1733136048731</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

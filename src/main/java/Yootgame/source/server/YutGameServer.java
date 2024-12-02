@@ -1,6 +1,5 @@
-package Yootgame.source.server;
+package Yootgame.source.server;//JavaObjServer.java ObjectStream 기반 채팅 Server
 
-//JavaObjServer.java ObjectStream 기반 채팅 Server
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -12,37 +11,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.List;
 import java.util.*;
-
-//JavaObjServer.java ObjectStream 기반 채팅 Server
-
-import java.awt.EventQueue;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
-import java.util.Vector;
-
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
-import javax.swing.border.EmptyBorder;
 
 public class YutGameServer extends JFrame {
 
@@ -129,7 +97,6 @@ public class YutGameServer extends JFrame {
         contentPane.add(btnServerStart);
     }
 
-    // 새로운 참가자 accept() 하고 user thread를 새로 생성한다.
     class AcceptServer extends Thread {
         @SuppressWarnings("unchecked")
         public void run() {
@@ -137,6 +104,21 @@ public class YutGameServer extends JFrame {
                 try {
                     AppendText("Waiting new clients ...");
                     client_socket = socket.accept(); // accept가 일어나기 전까지는 무한 대기중
+
+                    // 최대 인원(4명) 체크
+                    if (UserVec.size() >= 4) {
+                        AppendText("방이 가득 찼습니다.");
+                        ObjectOutputStream tempOos = new ObjectOutputStream(client_socket.getOutputStream());
+                        ChatMsg msg = new ChatMsg("SERVER", "999", "Room is full");
+                        tempOos.writeObject(msg.code);
+                        tempOos.writeObject(msg.UserName);
+                        tempOos.writeObject(msg.data);
+                        tempOos.flush();
+                        tempOos.close();
+                        client_socket.close();
+                        break;
+                    }
+
                     AppendText("새로운 참가자 from " + client_socket);
                     // User 당 하나씩 Thread 생성
                     UserService new_user = new UserService(client_socket);
@@ -146,7 +128,6 @@ public class YutGameServer extends JFrame {
                     System.out.println("현재 참가자 수 출력: " + UserVec.size());
                 } catch (IOException e) {
                     AppendText("accept() error");
-                    // System.exit(0);
                 }
             }
         }
@@ -219,7 +200,7 @@ public class YutGameServer extends JFrame {
                 userConnect[index] = true;
                 userIdx = index;
                 AppendText("새로운 참가자 " + UserName + " 입장.");
-                WriteOne(UserName + "님 윷놀이에 오신 것을 환영합니다!\n"); // 연결된 사용자에게 정상접속을 알림
+                WriteOne(UserName + "님 환영합니다!\n"); // 연결된 사용자에게 정상접속을 알림
                 SendUserIdx();
                 String msg = "[" + UserName + "]님이 입장 하였습니다.\n";
                 WriteOthers(msg); // 아직 user_vc에 새로 입장한 user는 포함되지 않았다.
@@ -768,6 +749,14 @@ public class YutGameServer extends JFrame {
                             else game_over("lose", user);
                         }
                     }
+                } else if (cm.code.equals("999")) {  // 방 가득 참 처리
+                    AppendText("방이 가득 찼습니다.");
+                    try {
+                        client_socket.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    break;
                 }
             } // while
         } // run
