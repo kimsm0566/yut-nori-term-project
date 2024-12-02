@@ -1,6 +1,4 @@
 package Yootgame.source.client;
-
-
 // JavaObjClientView.java ObjecStram 기반 Client
 //실질적인 채팅 창
 
@@ -51,37 +49,37 @@ public class YutGameClientView extends JFrame {
     private JButton btnGameStart;
     private JButton btnRollYut;
 
-    private Image mainBackground = new ImageIcon("src/main/java/Yootgame/source/client/images/bg_main.jpg").getImage();
-    private Image yutBackground = new ImageIcon("src/main/java/Yootgame/source/client/images/bg_yut.png").getImage();
-    private Image background = new ImageIcon("src/main/java/Yootgame/source/client/images/bg_gamepanel.jpg").getImage();
+    private Image mainBackground = new ImageIcon(YutGameClientView.class.getResource("images/bg_main.jpg")).getImage();
+    private Image yutBackground = new ImageIcon(YutGameClientView.class.getResource("images/bg_yut.png")).getImage();
+    private Image background = new ImageIcon(YutGameClientView.class.getResource("images/bg_gamepanel.jpg")).getImage();
     private ImageIcon imgGameSmallSpot = new ImageIcon(
-            "src/main/java/Yootgame/source/client/images/ic_game_small_spot.png");
+            YutGameClientView.class.getResource("images/ic_game_small_spot.png"));
     private ImageIcon imgGameBigSpot = new ImageIcon(
-            "src/main/java/Yootgame/source/client/images/ic_game_big_spot.png");
-    private ImageIcon character1 = new ImageIcon("src/main/java/Yootgame/source/client/images/character1.png");
-    private ImageIcon character2 = new ImageIcon("src/main/java/Yootgame/source/client/images/character2.png");
-    private ImageIcon character3 = new ImageIcon("src/main/java/Yootgame/source/client/images/character3.png");
-    private ImageIcon character4 = new ImageIcon("src/main/java/Yootgame/source/client/images/character4.png");
+            YutGameClientView.class.getResource("images/ic_game_big_spot.png"));
+    private ImageIcon character1 = new ImageIcon(YutGameClientView.class.getResource("images/character1.png"));
+    private ImageIcon character2 = new ImageIcon(YutGameClientView.class.getResource("images/character2.png"));
+    private ImageIcon character3 = new ImageIcon(YutGameClientView.class.getResource("images/character3.png"));
+    private ImageIcon character4 = new ImageIcon(YutGameClientView.class.getResource("images/character4.png"));
 
-    private ImageIcon gameStartImage = new ImageIcon("src/main/java/Yootgame/source/client/images/img_game_start.png");
+    private ImageIcon gameStartImage = new ImageIcon(YutGameClientView.class.getResource("images/img_game_start.png"));
     private ImageIcon gameStartHoverImage = new ImageIcon(
-            "src/main/java/Yootgame/source/client/images/img_game_start_hover.png");
-    private ImageIcon gameReadyImage = new ImageIcon("src/main/java/Yootgame/source/client/images/img_game_ready.png");
+            YutGameClientView.class.getResource("images/img_game_start_hover.png"));
+    private ImageIcon gameReadyImage = new ImageIcon(YutGameClientView.class.getResource("images/img_game_ready.png"));
     private ImageIcon gameReadyHoverImage = new ImageIcon(
-            "src/main/java/Yootgame/source/client/images/img_game_ready_hover.png");
+            YutGameClientView.class.getResource("images/img_game_ready_hover.png"));
     private ImageIcon gameReadyFinishImage = new ImageIcon(
-            "src/main/java/Yootgame/source/client/images/img_game_ready_finish.png");
+            YutGameClientView.class.getResource("images/img_game_ready_finish.png"));
     private ImageIcon gameReadyFinishHoverImage = new ImageIcon(
-            "src/main/java/Yootgame/source/client/images/img_game_ready_finish_hover.png");
-    private ImageIcon userReadyImage = new ImageIcon("src/main/java/Yootgame/source/client/images/img_user_ready.png");
-    private ImageIcon rollImage = new ImageIcon("src/main/java/Yootgame/source/client/images/img_roll.png");
-    private ImageIcon rollHoverImage = new ImageIcon("src/main/java/Yootgame/source/client/images/img_roll_hover.png");
-    private ImageIcon yutFrontImage = new ImageIcon("src/main/java/Yootgame/source/client/images/img_yut_front.png");
-    private ImageIcon yutBackImage = new ImageIcon("src/main/java/Yootgame/source/client/images/img_yut_back.png");
+            YutGameClientView.class.getResource("images/img_game_ready_finish_hover.png"));
+    private ImageIcon userReadyImage = new ImageIcon(YutGameClientView.class.getResource("images/img_user_ready.png"));
+    private ImageIcon rollImage = new ImageIcon(YutGameClientView.class.getResource("images/img_roll.png"));
+    private ImageIcon rollHoverImage = new ImageIcon(YutGameClientView.class.getResource("images/img_roll_hover.png"));
+    private ImageIcon yutFrontImage = new ImageIcon(YutGameClientView.class.getResource("images/img_yut_front.png"));
+    private ImageIcon yutBackImage = new ImageIcon(YutGameClientView.class.getResource("images/img_yut_back.png"));
     private ImageIcon yutSpecialImage = new ImageIcon(
-            "src/main/java/Yootgame/source/client/images/img_yut_special.png");
-    private ImageIcon crownImage = new ImageIcon("src/main/java/Yootgame/source/client/images/img_crown.png");
-    private ImageIcon arrowImage = new ImageIcon("src/main/java/Yootgame/source/client/images/img_arrow.png");
+            YutGameClientView.class.getResource("images/img_yut_special.png"));
+    private ImageIcon crownImage = new ImageIcon(YutGameClientView.class.getResource("images/img_crown.png"));
+    private ImageIcon arrowImage = new ImageIcon(YutGameClientView.class.getResource("images/img_arrow.png"));
 
     private ImageIcon gameSmallSpot = new ImageIcon(
             imgGameSmallSpot.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH));
@@ -331,6 +329,12 @@ public class YutGameClientView extends JFrame {
             contentPane.add(userPanel[i]);
         }
 
+        /*
+         * userGameObject[objectIdx].addMouseListener(new MouseAdapter() {
+         *
+         * @Override public void mouseClicked(MouseEvent e) { // 마우스로 클릭했을 때
+         * System.out.println(((JLabel) e.getSource()).getName()); } });
+         */
         for (int i = 0; i < 4; i++) {
             yutObjectLabel[i] = new JLabel();
             yutObjectLabel[i].setBounds(840 + 100 * i, 60, 70, 280);

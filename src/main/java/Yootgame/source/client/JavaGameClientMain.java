@@ -8,8 +8,6 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
-import java.net.Socket;
 
 public class JavaGameClientMain extends JFrame {
 
@@ -91,18 +89,16 @@ public class JavaGameClientMain extends JFrame {
         txtPortNumber.addActionListener(action);
     }
 
-    class Myaction implements ActionListener {
+    class Myaction implements ActionListener // 내부클래스로 액션 이벤트 처리 클래스
+    {
         @Override
-        // JavaGameClientMain.java의 Myaction 클래스에서
         public void actionPerformed(ActionEvent e) {
             String username = txtUserName.getText().trim();
             String ip_addr = txtIpAddress.getText().trim();
             String port_no = txtPortNumber.getText().trim();
-
-            robbyPage rp = new robbyPage(username, ip_addr,port_no);
-            rp.setVisible(true);
+//			JavaGameClientView view = new JavaGameClientView(username, ip_addr, port_no);
+            YutGameClientView view = new YutGameClientView(username, ip_addr, port_no);
             setVisible(false);
-
         }
     }
 }

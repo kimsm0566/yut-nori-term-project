@@ -4,10 +4,18 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b2e20ec5-7972-4560-8045-fa5842b2b937" name="Changes" comment="Refactor: code migration">
+    <list default="true" id="b2e20ec5-7972-4560-8045-fa5842b2b937" name="Changes" comment="feat : connecting-ui-and-backend">
+      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Yootgame/source/server/ClientServer/GameClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Yootgame/source/server/ClientServer/GameClient.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Yootgame/source/server/GameServer/GameServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Yootgame/source/server/GameServer/GameServer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Yootgame/source/client/ChatMsg.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Yootgame/source/client/ChatMsg.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Yootgame/source/client/JavaGameClientMain.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Yootgame/source/client/JavaGameClientMain.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Yootgame/source/client/UserData.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Yootgame/source/client/UserData.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Yootgame/source/client/YutGameClientView.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Yootgame/source/client/YutGameClientView.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Yootgame/source/client/robbyPage.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Yootgame/source/server/ChatMsg.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Yootgame/source/server/ChatMsg.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Yootgame/source/server/GameRoom.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Yootgame/source/server/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Yootgame/source/server/UserService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Yootgame/source/server/YutGameServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Yootgame/source/server/YutGameServer.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -31,10 +39,17 @@
       </state>
     </system>
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="feat/room-page-ui" />
+        <entry key="$PROJECT_DIR$" value="master" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -51,6 +66,13 @@
     &quot;accountId&quot;: &quot;49f07d6a-d3d1-4001-a378-b40cb95dcb99&quot;
   }
 }</component>
+  <component name="KubernetesApiPersistence">{}</component>
+  <component name="KubernetesApiProvider">{
+  &quot;isMigrated&quot;: true
+}</component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 3
 }</component>
@@ -67,34 +89,52 @@
     "Gradle.NetworkTermProject::Users:kimseonmin:Library:CloudStorage:OneDrive-gachon.ac.kr:대학교:2_2:컴퓨터네트워크:termProject:NetworkTermProject [:FirstPage.main()].executor": "Run",
     "Gradle.NetworkTermProject::Users:kimseonmin:Library:CloudStorage:OneDrive-gachon.ac.kr:대학교:2_2:컴퓨터네트워크:termProject:NetworkTermProject [:Yootgame.YootnoriApplication.main()].executor": "Run",
     "Gradle.NetworkTermProject::Users:kimseonmin:Library:CloudStorage:OneDrive-gachon.ac.kr:대학교:2_2:컴퓨터네트워크:termProject:NetworkTermProject [:Yootgame.source.FirstPage.main()].executor": "Run",
-    "Gradle.yut-nori-term-project [:Yootgame.source.server.clientserver.GameClient.main()].executor": "Run",
-    "Gradle.yut-nori-term-project [:Yootgame.source.server.gameserver.GameServer.main()].executor": "Run",
-    "Gradle.yut-nori-term-project 빌드.executor": "Run",
+    "Gradle.NetworkTermProject::Users:kimseonmin:Library:CloudStorage:OneDrive-gachon.ac.kr:대학교:2_2:컴퓨터네트워크:termProject:NetworkTermProject [:Yootgame.source.backend.Client.Client.main()].executor": "Run",
+    "Gradle.NetworkTermProject::Users:kimseonmin:Library:CloudStorage:OneDrive-gachon.ac.kr:대학교:2_2:컴퓨터네트워크:termProject:NetworkTermProject [:Yootgame.source.backend.Client.UnifiedGameClient.main()].executor": "Run",
+    "Gradle.NetworkTermProject::Users:kimseonmin:Library:CloudStorage:OneDrive-gachon.ac.kr:대학교:2_2:컴퓨터네트워크:termProject:NetworkTermProject [:Yootgame.source.backend.Server.Server.main()].executor": "Run",
+    "Gradle.NetworkTermProject::Users:kimseonmin:Library:CloudStorage:OneDrive-gachon.ac.kr:대학교:2_2:컴퓨터네트워크:termProject:NetworkTermProject [:Yootgame.source.backend.Server.UnifiedGameServer.main()].executor": "Run",
+    "Gradle.NetworkTermProject::Users:kimseonmin:Library:CloudStorage:OneDrive-gachon.ac.kr:대학교:2_2:컴퓨터네트워크:termProject:NetworkTermProject [:Yootgame.source.client.JavaGameClientMain.main()].executor": "Run",
+    "Gradle.NetworkTermProject::Users:kimseonmin:Library:CloudStorage:OneDrive-gachon.ac.kr:대학교:2_2:컴퓨터네트워크:termProject:NetworkTermProject [:Yootgame.source.server.YutGameServer.main()].executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "feat/server-side-synchronize",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "feat/connecting-ui-and-backend",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "/Users/kimseonmin/Library/CloudStorage/OneDrive-gachon.ac.kr/대학교/2_2/컴퓨터네트워크/termProject/NetworkTermProject/src/test",
+    "last_opened_file_path": "/Users/kimseonmin/Library/CloudStorage/OneDrive-gachon.ac.kr/대학교/2_2/컴퓨터네트워크/termProject/NetworkTermProject/src/main/java/Yootgame/source/client",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true",
-    "애플리케이션.YootnoriApplication.executor": "Run"
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.15332031",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "preferences.general",
+    "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/main/java/Yootgame/source/client" />
+      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/src/main/java/Yootgame/source" />
       <recent name="$PROJECT_DIR$/src/test" />
     </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/main/java/Yootgame/source" />
+      <recent name="$PROJECT_DIR$/src/main/java/Yootgame/source/backend/gamelogic" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="Yootgame.source.Server" />
+      <recent name="Yootgame.source.backend.gamelogic" />
+    </key>
   </component>
-  <component name="RunManager" selected="애플리케이션.YootnoriApplication">
-    <configuration name="FirstPage" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="Yootgame.source.FirstPage" />
+  <component name="RunManager" selected="Application.Server">
+    <configuration name="Server" type="Application" factoryName="Application" temporary="true">
+      <option name="MAIN_CLASS_NAME" value="Yootgame.source.server.YutGameServer" />
       <module name="NetworkTermProject.main" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="Yootgame.source.*" />
+          <option name="PATTERN" value="Yootgame.source.backend.Server.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -102,42 +142,30 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="GameClient" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="Yootgame.source.server.clientserver.GameClient" />
-      <module name="yut-nori-term-project.main" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="Yootgame.source.server.clientserver.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
+    <configuration name="client1" type="Application" factoryName="Application">
+      <option name="ALTERNATIVE_JRE_PATH" value="17" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+      <option name="MAIN_CLASS_NAME" value="Yootgame.source.client.JavaGameClientMain" />
+      <module name="NetworkTermProject.main" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="GameServer" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="Yootgame.source.server.gameserver.GameServer" />
-      <module name="yut-nori-term-project.main" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="Yootgame.source.server.gameserver.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
+    <configuration name="client2" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="Yootgame.source.client.JavaGameClientMain" />
+      <module name="NetworkTermProject.main" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="YootnoriApplication" type="Application" factoryName="Application" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="Yootgame.YootnoriApplication" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
+    <list>
+      <item itemvalue="Application.client1" />
+      <item itemvalue="Application.client2" />
+      <item itemvalue="Application.Server" />
+    </list>
     <recent_temporary>
       <list>
-        <item itemvalue="애플리케이션.GameClient" />
-        <item itemvalue="애플리케이션.GameServer" />
+        <item itemvalue="Application.Server" />
       </list>
     </recent_temporary>
   </component>
@@ -159,9 +187,11 @@
       <updated>1731755935201</updated>
       <workItem from="1731755936478" duration="844000" />
       <workItem from="1731757040451" duration="3424000" />
-      <workItem from="1731762536704" duration="4882000" />
-      <workItem from="1732012579417" duration="1236000" />
-      <workItem from="1732019531743" duration="4972000" />
+      <workItem from="1731762536704" duration="222000" />
+      <workItem from="1732432150054" duration="7000" />
+      <workItem from="1732533891429" duration="14005000" />
+      <workItem from="1732589192202" duration="153912000" />
+      <workItem from="1733127634174" duration="848000" />
     </task>
     <task id="LOCAL-00001" summary="Build: Transfer to Java">
       <option name="closed" value="true" />
@@ -171,59 +201,77 @@
       <option name="project" value="LOCAL" />
       <updated>1731759361636</updated>
     </task>
-    <task id="LOCAL-00002" summary="Refactor: code migration">
+    <task id="LOCAL-00002" summary="feat : room-page-ui">
       <option name="closed" value="true" />
-      <created>1731762789077</created>
+      <created>1732540064714</created>
       <option name="number" value="00002" />
       <option name="presentableId" value="LOCAL-00002" />
       <option name="project" value="LOCAL" />
-      <updated>1731762789077</updated>
+      <updated>1732540064714</updated>
     </task>
-    <task id="LOCAL-00003" summary="Refactor: code migration">
+    <task id="LOCAL-00003" summary="feat : merge-server-code">
       <option name="closed" value="true" />
-      <created>1731762968430</created>
+      <created>1732632673469</created>
       <option name="number" value="00003" />
       <option name="presentableId" value="LOCAL-00003" />
       <option name="project" value="LOCAL" />
-      <updated>1731762968430</updated>
+      <updated>1732632673469</updated>
     </task>
-    <task id="LOCAL-00004" summary="Refactor: code migration">
+    <task id="LOCAL-00004" summary="feat : merge-server-code">
       <option name="closed" value="true" />
-      <created>1732106111496</created>
+      <created>1732636590131</created>
       <option name="number" value="00004" />
       <option name="presentableId" value="LOCAL-00004" />
       <option name="project" value="LOCAL" />
-      <updated>1732106111496</updated>
+      <updated>1732636590132</updated>
     </task>
-    <task id="LOCAL-00005" summary="Refactor: code migration">
+    <task id="LOCAL-00005" summary="feat : connecting-ui-and-backend">
       <option name="closed" value="true" />
-      <created>1732106180420</created>
+      <created>1732889816139</created>
       <option name="number" value="00005" />
       <option name="presentableId" value="LOCAL-00005" />
       <option name="project" value="LOCAL" />
-      <updated>1732106180420</updated>
+      <updated>1732889816139</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="feat : connecting-ui-and-backend">
+      <option name="closed" value="true" />
+      <created>1733055001939</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1733055001939</updated>
+    </task>
+    <task id="LOCAL-00007" summary="feat : connecting-ui-and-backend">
+      <option name="closed" value="true" />
+      <created>1733076167037</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1733076167037</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
-  <component name="Vcs.Log.Tabs.Properties">
-    <option name="TAB_STATES">
-      <map>
-        <entry key="MAIN">
-          <value>
-            <State />
-          </value>
-        </entry>
-      </map>
-    </option>
-  </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Build: Transfer to Java" />
-    <MESSAGE value="Refactor: code migration" />
-    <option name="LAST_COMMIT_MESSAGE" value="Refactor: code migration" />
+    <MESSAGE value="feat : room-page-ui" />
+    <MESSAGE value="feat : merge-server-code" />
+    <MESSAGE value="feat : connecting-ui-and-backend" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat : connecting-ui-and-backend" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/Yootgame/source/backend/Handler/RoomConnectionHandler.java</url>
+          <line>53</line>
+          <option name="timeStamp" value="10" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/NetworkTermProject$FirstPage.ic" NAME="FirstPage Coverage Results" MODIFIED="1731761280824" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
