@@ -587,36 +587,44 @@ public class YutGameServer extends JFrame {
                     }
 
 
-                    if (isArival) { // 도착하면 무조건 move object이기에 objectIdx가 있다.
+                    if (isArival) {
+                        // 도착하면 무조건 move object이기에 objectIdx가 있다.
                         userGameObjectPos[objectIdx] = -1;
-
                         for (int i = 0; i < 4; i++) {
                             if (overlapGameObjectIdx[i] == objectIdx) {
                                 overlapGameObjectIdx[i] = -1;
                                 userGameObjectPos[i] = -1;
                             }
                         }
-
                         sendObjectInfo();
 
-                        if (restObjectCnt == 0) {
-                            boolean isWin = true;
-                            for (int i = 0; i < 4; i++) {
-                                if (userGameObjectPos[i] != -1) {
-                                    isWin = false;
-                                    break;
-                                }
-                            }
-                            if (isWin) {
-                                // TODO 게임 끝
-                                for (int i = 0; i < user_vc.size(); i++) {
-                                    UserService user = (UserService) user_vc.elementAt(i);
-                                    if(user == this) user.game_over("win", user);
-                                    else user.game_over("lose", user);
-                                }
+                        // 턴 변경 로직 추가
+                        this.rollResultList.clear();
+                        playTurnIdx += 1;
+                        int turn = playTurnIdx % UserVec.size();
+
+                        // 기권한 플레이어 건너뛰기
+                        while (true) {
+                            UserService nextUser = (UserService) UserVec.elementAt(turn);
+                            if (!nextUser.isGiveUp) break;
+                            playTurnIdx += 1;
+                            turn = playTurnIdx % UserVec.size();
+                        }
+
+                        String nextUserName = "";
+                        for (int i = 0; i < UserVec.size(); i++) {
+                            UserService user = (UserService) UserVec.elementAt(i);
+                            if (user.userIdx == turn) {
+                                nextUserName = user.UserName;
+                                break;
                             }
                         }
-                    } else {
+
+                        ChatMsg obcm = new ChatMsg("SERVER", "500", nextUserName + " " + turn + " true");
+                        WriteAllObject(obcm);
+                        return; // 도착 후 추가 이동 방지
+                    }
+                    else {
                         int overlapIdx = -1;
                         boolean isOverlap = false;
                         for (int i = 0; i < 4; i++) {
@@ -701,9 +709,17 @@ public class YutGameServer extends JFrame {
                             }
                         } else {
                             this.rollResultList.clear();
-
                             playTurnIdx += 1;
                             int turn = playTurnIdx % UserVec.size();
+
+                            // 기권한 플레이어 건너뛰기
+                            while (true) {
+                                UserService nextUser = (UserService) UserVec.elementAt(turn);
+                                if (!nextUser.isGiveUp) break;
+                                playTurnIdx += 1;
+                                turn = playTurnIdx % UserVec.size();
+                            }
+
                             String nextUserName = "";
                             for (int i = 0; i < UserVec.size(); i++) {
                                 UserService user = (UserService) UserVec.elementAt(i);
@@ -713,11 +729,9 @@ public class YutGameServer extends JFrame {
                                 }
                             }
 
-                            obcm = new ChatMsg("SERVER", "500", nextUserName + " " + turn);
-                            for (int i = 0; i < UserVec.size(); i++) {
-                                UserService user = (UserService) UserVec.elementAt(i);
-                                user.WriteChatMsg(obcm);
-                            }
+                            // true 추가하여 턴 변경 메시지 전송
+                            obcm = new ChatMsg("SERVER", "500", nextUserName + " " + turn + " true");
+                            WriteAllObject(obcm);
                         }
                     }
                 }else if (cm.code.matches("506")) {
