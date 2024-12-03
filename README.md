@@ -79,7 +79,3 @@ src/
 - Abnormal Client Termination
 - Player Abandonment
 - Data Transfer Errors
-
-Citations:
-[1] https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/31641994/2b3cea05-6b22-4933-bb2d-4b158032da77/paste.txt
-[2] https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/31641994/df8d777c-e211-4314-a9a4-bf3c7a4098cc/paste-2.txt
